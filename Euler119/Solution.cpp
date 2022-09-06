@@ -83,12 +83,30 @@ vector<int> multuply(vector<int> a, vector<int> b) {
     return ret;
 }
 
-//vector<int> power(vector<int> v, int n) {
-//    vector<int> ret;
-//    for (int i = 0; i < n; i++) {
-//        ret = multuply(v, v);
-//    }
-//}
+vector<int> power(vector<int> v, int n) {
+
+    if (n == 0 || n == 1) {
+        return v;
+    }
+
+    if (n == 2) {
+        return multuply(v, v);
+    }
+
+    int n2 = (int)(log(n) / log(2.));
+    int rem = n % ((int)pow(2, n2));
+
+    vector<int> ret = multuply(v, v);
+    for (int i = 1; i < n2; i++) {
+        ret = multuply(ret, ret);
+    }
+
+    for (int i = 0; i < rem; i++) {
+        ret = multuply(ret, v);
+    }
+
+    return ret;
+}
 
 int sumOfDigits(int n, int base) {
 
@@ -106,105 +124,6 @@ int sumOfDigits(int n, int base) {
     }
 
     return s;
-}
-
-bool multTest(vector<int> v1, vector<int> v2, vector<int> exp) {
-
-    vector<int> act = multuply(v1, v2);
-
-    if (exp.size() != act.size()) {
-        return false;
-    }
-
-    for (int i = 0; i < exp.size(); i++) {
-        if (exp[i] != act[i]) {
-            return false;
-        }
-    }
-
-    return true;
-}
-
-bool multTests() {
-
-    vector<int> v1 = { 0 };
-    vector<int> v2 = { 5, 2, 3, 2, 9, 1 };
-    vector<int> exp = { 0, 0, 0, 0, 0, 0 };
-    if (!multTest(v1, v2, exp)) {
-        return false;
-    }
-
-    v1 = { 1 };
-    v2 = { 5, 7, 8, 3 };
-    exp = { 5, 7, 8, 3 };
-    if (!multTest(v1, v2, exp)) {
-        return false;
-    }
-
-    v1 = { 5, 7, 8, 3 };
-    v2 = { 1 };
-    exp = { 5, 7, 8, 3 };
-    if (!multTest(v1, v2, exp)) {
-        return false;
-    }
-
-    v1 = { 2 };
-    v2 = { 5, 7, 8, 3 };
-    exp = { 0, 5, 7, 7 };
-    if (!multTest(v1, v2, exp)) {
-        return false;
-    }
-
-    v1 = { 5, 7, 8, 3 };
-    v2 = { 2 };
-    exp = { 0, 5, 7, 7 };
-    if (!multTest(v1, v2, exp)) {
-        return false;
-    }
-
-    v1 = { 3 };
-    v2 = { 5, 7, 8, 3 };
-    exp = { 5, 2, 6, 1, 1 };
-    if (!multTest(v1, v2, exp)) {
-        return false;
-    }
-
-    v1 = { 5, 7, 8, 3 };
-    v2 = { 3 };
-    exp = { 5, 2, 6, 1, 1 };
-    if (!multTest(v1, v2, exp)) {
-        return false;
-    }
-
-    v1 = { 5, 2, 3, 2, 9, 1 };
-    v2 = { 4, 5, 7, 8, 3 };
-    exp = { 0, 5, 0, 3, 6, 3, 3, 5, 4, 7 };
-    if (!multTest(v1, v2, exp)) {
-        return false;
-    }
-
-    v1 = { 4, 5, 7, 8, 3 };
-    v2 = { 5, 2, 3, 2, 9, 1 };
-    exp = { 0, 5, 0, 3, 6, 3, 3, 5, 4, 7 };
-    if (!multTest(v1, v2, exp)) {
-        return false;
-    }
-
-    v1 = { 1, 1, 1, 1, 1 };
-    v2 = { 2, 2, 2, 2, 2, 2, 2, 2, 2 };
-    exp = { 2, 4, 6, 8, 0, 1, 1, 1, 1, 9, 6, 4, 2 };
-    if (!multTest(v1, v2, exp)) {
-        return false;
-    }
-
-    v1 = { 2, 2, 2, 2, 2, 2, 2, 2, 2 };
-    v2 = { 1, 1, 1, 1, 1 };
-    exp = { 2, 4, 6, 8, 0, 1, 1, 1, 1, 9, 6, 4, 2 };
-    if (!multTest(v1, v2, exp)) {
-        return false;
-    }
-
-    return true;
 }
 
 /// <summary>
@@ -278,6 +197,5 @@ void solve(int base) {
 
 int main() {
 
-    cout << (multTests() ? "Passed" : "Failed") << endl;
     return 0;
 }

@@ -4,6 +4,8 @@
 #include <iostream>
 #include <algorithm>
 
+#include "IntegerAsVectors.h"
+
 using namespace std;
 
 /// <summary>
@@ -98,6 +100,76 @@ vector<int> multuply(vector<int> a, int b) {
     return ret;
 }
 
+/// <summary>
+/// Returns multiplication of two integers represented as vectors of int.
+/// </summary>
+/// <param name="a">The first integer.</param>
+/// <param name="b">The second integer.</param>
+/// <returns></returns>
+vector<int> multuply(vector<int> a, vector<int> b) {
+
+    vector<int> ret;
+    for (int i = 0; i < b.size(); i++) {
+
+        // Current vector
+        vector<int> retCurr;
+
+        // Add leading zeroes
+        for (int j = 0; j < i; j++) {
+            retCurr.push_back(0);
+        }
+
+        // Multiplication
+        int mm = b[i];
+        int c = 0;
+        for (int ai : a) {
+
+            int res = ai * mm + c;
+            int rem = res % 10;
+            c = res / 10;
+            retCurr.push_back(rem);
+        }
+        if (c > 0) {
+            retCurr.push_back(c);
+        }
+
+        // Adding to the main result
+        ret = sum(ret, retCurr);
+    }
+
+    return ret;
+}
+
+vector<int> power(vector<int> v, int n) {
+
+    if (n == 0 || n == 1) {
+        return v;
+    }
+
+    if (n == 2) {
+        return multuply(v, v);
+    }
+
+    int n2 = (int)(log(n) / log(2.));
+    int rem = n % ((int)pow(2, n2));
+
+    vector<int> ret = multuply(v, v);
+    for (int i = 1; i < n2; i++) {
+        ret = multuply(ret, ret);
+    }
+
+    for (int i = 0; i < rem; i++) {
+        ret = multuply(ret, v);
+    }
+
+    return ret;
+}
+
+/// <summary>
+/// Returns factorial as a vector of ints.
+/// </summary>
+/// <param name="a">The values to caculate factorial.</param>
+/// <returns></returns>
 vector<int> factorial(int a) {
 
     vector<int> ret;
@@ -108,38 +180,4 @@ vector<int> factorial(int a) {
         ret = multuply(factorial(a - 1), a);
     }
     return ret;
-}
-
-int solve(int n) {
-
-    vector<int> v = factorial(n);
-
-    int ret = 0;
-    for (int d : v) {
-        ret += d;
-    }
-
-    return ret;
-}
-
-int main() {
-
-    //vector<int> v = { 7, 8, 3, 2 };
-    //vector<int> res = multuply(v, 13);
-
-    //for (int i : res) {
-    //    cout << i << " ";
-    //}
-    //cout << endl;
-
-    // vector<int> res = factorial(100);
-
-    for (int n = 0; n <= 1000; n++) {
-        cout << n << " : " << solve(n) << endl;
-    }
-
-    // cout << (sumTests() ? "Passed" : "Failed") << endl;
-    // cout << (multTests() ? "Passed" : "Failed") << endl;
-
-    return 0;
 }
