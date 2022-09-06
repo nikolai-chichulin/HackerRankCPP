@@ -130,11 +130,13 @@
     <ClCompile Include="IntegerAsVectors.cpp" />
     <ClCompile Include="IntegerAsVectorsTester.cpp" />
     <ClCompile Include="MultTests.cpp" />
+    <ClCompile Include="PowerTests.cpp" />
     <ClCompile Include="SumTests.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="IntegerAsVectors.h" />
     <ClInclude Include="MultTests.h" />
+    <ClInclude Include="PowerTests.h" />
     <ClInclude Include="SumTests.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
