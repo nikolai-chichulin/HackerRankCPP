@@ -6,51 +6,141 @@
 
 using namespace std;
 
-int primes[] = { 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73,
-79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173,
-179, 181, 191, 193, 197, 199, 211, 223, 227, 229, 233, 239, 241, 251, 257, 263,
-269, 271, 277, 281,
-283, 293, 307, 311, 313, 317, 331, 337, 347, 349, 353, 359, 367, 373, 379, 383, 389, 397, 401, 409,
-419, 421, 431, 433, 439, 443, 449, 457, 461, 463, 467, 479, 487, 491, 499, 503, 509, 521, 523, 541,
-547, 557, 563, 569, 571, 577, 587, 593, 599, 601, 607, 613, 617, 619, 631, 641, 643, 647, 653, 659,
-661, 673, 677, 683, 691, 701, 709, 719, 727, 733, 739, 743, 751, 757, 761, 769, 773, 787, 797, 809,
-811, 821, 823, 827, 829, 839, 853, 857, 859, 863, 877, 881, 883, 887, 907, 911, 919, 929, 937, 941,
-947, 953, 967, 971, 977, 983, 991, 997, 1009, 1013, 1019, 1021, 1031, 1033, 1039, 1049, 1051, 1061, 1063, 1069,
-1087, 1091, 1093, 1097, 1103, 1109, 1117, 1123, 1129, 1151, 1153, 1163, 1171, 1181, 1187, 1193, 1201, 1213, 1217, 1223,
-1229, 1231, 1237, 1249, 1259, 1277, 1279, 1283, 1289, 1291, 1297, 1301, 1303, 1307, 1319, 1321, 1327, 1361, 1367, 1373,
-1381, 1399, 1409, 1423, 1427, 1429, 1433, 1439, 1447, 1451, 1453, 1459, 1471, 1481, 1483, 1487, 1489, 1493, 1499, 1511,
-1523, 1531, 1543, 1549, 1553, 1559, 1567, 1571, 1579, 1583, 1597, 1601, 1607, 1609, 1613, 1619, 1621, 1627, 1637, 1657,
-1663, 1667, 1669, 1693, 1697, 1699, 1709, 1721, 1723, 1733, 1741, 1747, 1753, 1759, 1777, 1783, 1787, 1789, 1801, 1811,
-1823, 1831, 1847, 1861, 1867, 1871, 1873, 1877, 1879, 1889, 1901, 1907, 1913, 1931, 1933, 1949, 1951, 1973, 1979, 1987,
-1993, 1997, 1999 };
+/// <summary>
+/// Returns multiplication of two integers represented as vectors of int.
+/// </summary>
+/// <param name="a">The first integer.</param>
+/// <param name="b">The second integer.</param>
+/// <returns></returns>
+vector<int> multuply(vector<int> a, vector<int> b) {
 
-int getmax(int n) {
-    return 100. / log10((double)n);
-}
+    vector<int> ret;
+    for (int i = 0; i < b.size(); i++) {
 
-bool isCurious(int n) {
+        // Current vector
+        vector<int> retCurr;
 
-    return true;
-}
-
-int solve(int n) {
-
-    int ret = 0;
-    for (int i = 10; i < n; i++) {
-        if (isCurious(i)) {
-            ret += i;
+        // Add leading zeroes
+        for (int j = 0; j < i; j++) {
+            retCurr.push_back(0);
         }
+
+        // Multiplication
+        int mm = b[i];
+        int c = 0;
+        for (int ai : a) {
+
+            int res = ai * mm + c;
+            int rem = res % 10;
+            c = res / 10;
+            retCurr.push_back(rem);
+        }
+        if (c > 0) {
+            retCurr.push_back(c);
+        }
+
+        // Adding to the main result
+        ret = sum(ret, retCurr);
     }
 
     return ret;
 }
 
 
-int main() {
 
-    for (int p : primes) {
-        cout << getmax(p) << endl;
+vector<int> power(vector<int> v, int n) {
+
+}
+
+int sumOfDigits(int n, int base) {
+
+    if (n < base) {
+        return n;
     }
 
+    int m = n;
+    int s = 0;
+    while (m != 0) {
+
+        int rem = m % base;
+        s += rem;
+        m /= base;
+    }
+
+    return s;
+}
+
+/// <summary>
+/// Solve the problem for the given order and base.
+/// </summary>
+/// <param name="n">The order.</param>
+/// <param name="base">The base.</param>
+void solve(int n, int base) {
+
+    // Min and max numbers for {n, base}
+    long long nmin = (int)pow(base, n);
+    long long nmax = (int)pow(base, n + 1) - 1;
+
+    // Min and max sum of digits for the order n
+    int smin = 2; // always 1, 100 for base=10, n=2
+    int smax = (base - 1) * (n + 1); // 999 for base=10, n=2
+
+    // Loop over the potential sums of digits
+    cout << n << " : ";
+    for (int s = smin; s <= smax; s++) {
+        // Loop over the powers
+        for (int m = 2; m < 300; m++) {
+            int sp = (int)pow(s, m);
+            if (sp < nmin) {
+                continue;
+            }
+            if (sp > nmax) {
+                break;
+            }
+            int sact = sumOfDigits(sp, base);
+            if (sact == s) {
+                cout << sp << " ";
+            }
+        }
+    }
+    cout << endl;
+}
+
+void solveN(int base) {
+
+    vector<int> v;
+
+    // Max order (100 for base = 10)
+    int nmax = 10 / log10(base);
+
+    // Min and max sum of digits for the order n
+    int smin = 2; // always 1, 100 for base=10, n=2
+    int smax = (base - 1) * nmax; // 999 for base=10, n=2
+
+    // Loop over the potential sums of digits
+    for (int s = smin; s <= smax; s++) {
+        // Loop over the powers
+        for (int m = 2; m < nmax; m++) {
+            int sp = (int)pow(s, m);
+            int sact = sumOfDigits(sp, base);
+            if (sact == s) {
+                cout << sp << " ";
+                v.push_back(sp);
+            }
+        }
+    }
+    cout << endl;
+}
+
+void solve(int base) {
+
+    for (int n = 1; n < 100; n++) {
+        solve(n, base);
+    }
+}
+
+int main() {
+
+    solveN(10);
     return 0;
 }
