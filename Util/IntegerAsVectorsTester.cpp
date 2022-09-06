@@ -9,5 +9,6 @@ int main() {
     cout << (multTestsV() ? "Passed" : "Failed") << endl;
     cout << (sumTests() ? "Passed" : "Failed") << endl;
     cout << (powerTests() ? "Passed" : "Failed") << endl;
+    cout << (powerTestsI() ? "Passed" : "Failed") << endl;
     return 0;
 }

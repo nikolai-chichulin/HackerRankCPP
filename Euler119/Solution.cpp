@@ -84,6 +84,7 @@ vector<int> multuply(vector<int> a, vector<int> b) {
     return ret;
 }
 
+
 vector<int> power(vector<int> v, int n) {
 
     if (n == 0 || n == 1) {
@@ -109,37 +110,71 @@ vector<int> power(vector<int> v, int n) {
     return ret;
 }
 
-vector<int> powers[1000][500];
+vector<int> powers[1300][500];
 
-vector<int> power(vector<int> v, int i, int n) {
+vector<int> power(vector<int> v, int iv, int n) {
 
-    if (!powers[i][n].empty()) {
-        return powers[i][n];
+    if (!powers[iv][n].empty()) {
+        return powers[iv][n];
     }
 
     if (n == 0 || n == 1) {
-        powers[i][n] = v;
-        return powers[i][n];
+        powers[iv][n] = v;
+        return powers[iv][n];
     }
 
     if (n == 2) {
-        powers[i][n] = multuply(v, v);
-        return powers[i][n];
+        powers[iv][n] = multuply(v, v);
+        return powers[iv][n];
     }
 
     int n2 = (int)(log(n) / log(2.));
     int rem = n % ((int)pow(2, n2));
 
-    vector<int> ret = multuply(v, v);
+    int p = 2; // power
+    vector<int> ret = power(v, iv, p);
+
     for (int i = 1; i < n2; i++) {
-        ret = multuply(ret, ret);
+
+        int vl = iv * iv;
+        ret = power(ret, vl, 2);
+        p *= 2;
+        powers[iv][p] = ret;
+
+        // fill out the right triangle of the powers
+        // decomposition of the power p: 4=2*2, 8=2*4=4*2, 16=2*8=4*4=8*2
+        int pl = p / 2;
+        while (pl > 1)
+        {
+            powers[vl][pl] = ret;
+            vl *= vl;
+            pl /= 2;
+        }
     }
 
     for (int i = 0; i < rem; i++) {
+        p += 1;
         ret = multuply(ret, v);
+        powers[iv][p] = ret;
     }
 
     return ret;
+}
+
+vector<int> power11(vector<int> v, int iv, int n) {
+
+    if (powers[iv][n].empty()) {
+        if (n == 0 || n == 1) {
+            powers[iv][n] = v;
+        }
+        else if (n == 2) {
+            powers[iv][n] = multuply(v, v);
+        }
+        else {
+            powers[iv][n] = multuply(power(v, iv, n - 1), v);
+        }
+    }
+    return powers[iv][n];
 }
 
 vector<int> convertToVector(int n, int base) {
@@ -263,19 +298,19 @@ void solveV(int base) {
         vector<int> sExpV = convertToVector(sExp, base);
         int mmax = static_cast<int>(100. / log10(sExp));
         // Loop over the powers
-        cout << "sExp " << sExp << ": ";
+        // cout << "sExp " << sExp << ": ";
         for (int m = 2; m <= mmax; m++) {
-            cout << m << " ";
-            vector<int> sExpR = power(sExpV, m);
+            // cout << m << " ";
+            vector<int> sExpR = power11(sExpV, sExp, m); // power(sExpV, m);
             int sAct = sumOfDigits(sExpR);
             if (sAct == sExp) {
                 ret++;
                 // cout << sp << " ";
                 // v.push_back(sp);
-                // cout << ret << ": " << sExp << " " << m << endl;
+                cout << ret << ": " << sExp << " " << m << endl;
             }
         }
-        cout << endl;
+        // cout << endl;
     }
     cout << endl;
 }

@@ -5,5 +5,7 @@
 
 bool powerTest(vector<int> v, int n, vector<int> exp);
 bool powerTests();
+bool powerTest(vector<int> v, int i, int n, vector<int> exp);
+bool powerTestsI();
 
 #endif // !POWER_TESTS_H

@@ -165,34 +165,40 @@ vector<int> power(vector<int> v, int n) {
     return ret;
 }
 
-vector<int> powers[1000][500];
+vector<int> powers[1300][500];
 
-vector<int> power(vector<int> v, int i, int n) {
+vector<int> power(vector<int> v, int iv, int n) {
 
-    if (!powers[i][n].empty()) {
-        return powers[i][n];
+    if (!powers[iv][n].empty()) {
+        return powers[iv][n];
     }
 
     if (n == 0 || n == 1) {
-        powers[i][n] = v;
-        return powers[i][n];
+        powers[iv][n] = v;
+        return powers[iv][n];
     }
 
     if (n == 2) {
-        powers[i][n] = multuply(v, v);
-        return powers[i][n];
+        powers[iv][n] = multuply(v, v);
+        return powers[iv][n];
     }
 
     int n2 = (int)(log(n) / log(2.));
     int rem = n % ((int)pow(2, n2));
 
-    vector<int> ret = multuply(v, v);
+    vector<int> ret = power(v, iv, 2); // multuply(v, v);
+    int p = 2; // power of 2
+
     for (int i = 1; i < n2; i++) {
+        p *= 2;
         ret = multuply(ret, ret);
+        powers[iv][p] = ret;
     }
 
     for (int i = 0; i < rem; i++) {
+        p += 1;
         ret = multuply(ret, v);
+        powers[iv][p] = ret;
     }
 
     return ret;
