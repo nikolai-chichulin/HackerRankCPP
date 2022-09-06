@@ -3,6 +3,7 @@
 #include <vector>
 #include <iostream>
 #include <algorithm>
+#include <map>
 
 using namespace std;
 
@@ -108,6 +109,53 @@ vector<int> power(vector<int> v, int n) {
     return ret;
 }
 
+vector<int> powers[1000][500];
+
+vector<int> power(vector<int> v, int i, int n) {
+
+    if (!powers[i][n].empty()) {
+        return powers[i][n];
+    }
+
+    if (n == 0 || n == 1) {
+        powers[i][n] = v;
+        return powers[i][n];
+    }
+
+    if (n == 2) {
+        powers[i][n] = multuply(v, v);
+        return powers[i][n];
+    }
+
+    int n2 = (int)(log(n) / log(2.));
+    int rem = n % ((int)pow(2, n2));
+
+    vector<int> ret = multuply(v, v);
+    for (int i = 1; i < n2; i++) {
+        ret = multuply(ret, ret);
+    }
+
+    for (int i = 0; i < rem; i++) {
+        ret = multuply(ret, v);
+    }
+
+    return ret;
+}
+
+vector<int> convertToVector(int n, int base) {
+
+    vector<int> ret;
+    int m = n;
+    while (m != 0) {
+
+        int rem = m % base;
+        ret.push_back(rem);
+        m /= base;
+    }
+
+    return ret;
+}
+
 int sumOfDigits(int n, int base) {
 
     if (n < base) {
@@ -123,6 +171,16 @@ int sumOfDigits(int n, int base) {
         m /= base;
     }
 
+    return s;
+}
+
+int sumOfDigits(vector<int> v) {
+
+    int s = 0;
+    for (int i : v)
+    {
+        s += i;
+    }
     return s;
 }
 
@@ -167,7 +225,7 @@ void solveN(int base) {
     vector<int> v;
 
     // Max order (100 for base = 10)
-    int nmax = 10 / log10(base);
+    int nmax = static_cast<int>(10. / log10(base));
 
     // Min and max sum of digits for the order n
     int smin = 2; // always 1, 100 for base=10, n=2
@@ -188,6 +246,40 @@ void solveN(int base) {
     cout << endl;
 }
 
+void solveV(int base) {
+
+    //vector<vector<int>> v;
+
+    // Max order (100 for base = 10)
+    int nmax = static_cast<int>(100. / log10(base));
+
+    // Min and max sum of digits for the order n
+    int sMin = 2; // always 1, 100 for base=10, n=2
+    int sMax = (base - 1) * nmax; // 999 for base=10, n=2
+
+    // Loop over the potential sums of digits
+    int ret = 0;
+    for (int sExp = sMin; sExp <= sMax; sExp++) {
+        vector<int> sExpV = convertToVector(sExp, base);
+        int mmax = static_cast<int>(100. / log10(sExp));
+        // Loop over the powers
+        cout << "sExp " << sExp << ": ";
+        for (int m = 2; m <= mmax; m++) {
+            cout << m << " ";
+            vector<int> sExpR = power(sExpV, m);
+            int sAct = sumOfDigits(sExpR);
+            if (sAct == sExp) {
+                ret++;
+                // cout << sp << " ";
+                // v.push_back(sp);
+                // cout << ret << ": " << sExp << " " << m << endl;
+            }
+        }
+        cout << endl;
+    }
+    cout << endl;
+}
+
 void solve(int base) {
 
     for (int n = 1; n < 100; n++) {
@@ -197,5 +289,6 @@ void solve(int base) {
 
 int main() {
 
+    solveV(10);
     return 0;
 }

@@ -165,6 +165,39 @@ vector<int> power(vector<int> v, int n) {
     return ret;
 }
 
+vector<int> powers[1000][500];
+
+vector<int> power(vector<int> v, int i, int n) {
+
+    if (!powers[i][n].empty()) {
+        return powers[i][n];
+    }
+
+    if (n == 0 || n == 1) {
+        powers[i][n] = v;
+        return powers[i][n];
+    }
+
+    if (n == 2) {
+        powers[i][n] = multuply(v, v);
+        return powers[i][n];
+    }
+
+    int n2 = (int)(log(n) / log(2.));
+    int rem = n % ((int)pow(2, n2));
+
+    vector<int> ret = multuply(v, v);
+    for (int i = 1; i < n2; i++) {
+        ret = multuply(ret, ret);
+    }
+
+    for (int i = 0; i < rem; i++) {
+        ret = multuply(ret, v);
+    }
+
+    return ret;
+}
+
 /// <summary>
 /// Returns factorial as a vector of ints.
 /// </summary>
