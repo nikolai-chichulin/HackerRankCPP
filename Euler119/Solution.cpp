@@ -21,9 +21,16 @@ vector<int> inverse(vector<int> v) {
 
 void out(vector<int> v) {
     for (int v : v) {
-        cout << v << ":";
+        cout << v;
     }
     cout << " ";
+}
+
+/// Compares two vectors
+bool compare(vector<int> v1, vector<int> v2)
+{
+    bool shorter = v1.size() < v2.size();
+    return shorter;
 }
 
 /// <summary>
@@ -280,9 +287,9 @@ void solveN(int base) {
 /// Variant with numbers as vectors.
 /// </summary>
 /// <param name="base">The base.</param>
-void solveV(int base) {
+vector<vector<int>> solveV(int base) {
 
-    vector<vector<int>> v;
+    vector<vector<int>> ret;
 
     // Max order (100 for base = 10)
     int nmax = static_cast<int>(100. / log10(base));
@@ -293,7 +300,7 @@ void solveV(int base) {
     int sMax = sBase * nmax; // 999 for base=10, n=2
 
     // Loop over the potential sums of digits
-    int ret = 0;
+    int num = 0;
     for (int sExp = sMin; sExp <= sMax; sExp++) {
         vector<int> sExpV = convertToVector(sExp, base);
         int mmax = static_cast<int>(100. / log10(sExp));
@@ -304,7 +311,7 @@ void solveV(int base) {
             vector<int> sExpR = power3(sExpV, sExp, m, base);
             int sAct = sumOfDigits(sExpR);
             if (sAct == sExp) {
-                ret++;
+                num++;
                 //cout << sp << " ";
                 //cout << ret << ": " << sExp << " ^ " << m << " : " << endl;
                 //cout << "Base notation:    ";
@@ -315,30 +322,36 @@ void solveV(int base) {
                 //cout << "Decimal notation: ";
                 //out(inverse(sExpRDec));
                 //cout << endl;
-                v.push_back(inverse(power1(convertToVector(sExp, 10), m, 10)));
+                ret.push_back(inverse(power1(convertToVector(sExp, 10), m, 10)));
             }
         }
         // cout << endl;
     }
-    cout << endl;
+    // cout << endl;
 
-    sort(v.begin(), v.end());
+    sort(ret.begin(), ret.end(), compare);
+    return ret;
 }
 
 int main() {
 
     auto start = std::chrono::high_resolution_clock::now();
 
-    for (int base = 2; base <= 1000; base++) {
+    for (int base = 10; base <= 10; base++) {
 
         cout << endl << "---------- Base " << base << " ----------" << endl;
 
-        auto start1 = std::chrono::high_resolution_clock::now();
-        solveV(base);
-        auto stop1 = std::chrono::high_resolution_clock::now();
-        auto duration1 = std::chrono::duration_cast<std::chrono::microseconds>(stop1 - start1);
+        //auto start1 = std::chrono::high_resolution_clock::now();
+        vector<vector<int>> res = solveV(base);
+        for (vector<int> v : res) {
+            out(v);
+        }
+        cout << endl;
 
-        cout << "Time: " << duration1.count() / 1E6 << " seconds" << endl;
+        //auto stop1 = std::chrono::high_resolution_clock::now();
+        //auto duration1 = std::chrono::duration_cast<std::chrono::microseconds>(stop1 - start1);
+
+        //cout << "Time: " << duration1.count() / 1E6 << " seconds" << endl;
 
         for (int i = 0; i < 1300; i++)
         {
