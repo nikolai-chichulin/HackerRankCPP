@@ -8,7 +8,7 @@
 
 using namespace std;
 
-vector<int> powers[1300][500];
+vector<int> powers[35000][500];
 
 vector<int> inverse(vector<int> v) {
 
@@ -29,8 +29,21 @@ void out(vector<int> v) {
 /// Compares two vectors
 bool compare(vector<int> v1, vector<int> v2)
 {
-    bool shorter = v1.size() < v2.size();
-    return shorter;
+    if (v1.size() < v2.size()) {
+        return true;
+    }
+    if (v1.size() > v2.size()) {
+        return false;
+    }
+    for (int i = 0; i < v1.size(); i++) {
+        if (v1[i] < v2[i]) {
+            return true;
+        }
+        else if (v1[i] > v2[i]) {
+            return false;
+        }
+    }
+    return false;
 }
 
 /// <summary>
@@ -248,7 +261,7 @@ int sumOfDigits(vector<int> v) {
     int s = 0;
     for (int i : v)
     {
-        s += sumOfDigits(i, 10);
+        s += i; // sumOfDigits(i, 10);
     }
     return s;
 }
@@ -296,10 +309,12 @@ vector<vector<int>> solveV(int base) {
 
     // Min and max sum of digits for the order n
     int sMin = 2; // always 1, 100 for base=10, n=2
-    int sBase = sumOfDigits(base - 1, 10);
-    int sMax = sBase * nmax; // 999 for base=10, n=2
+    // int sBase = sumOfDigits(base - 1, 10);
+    int sMax = (base - 1) * nmax; // 999 for base=10, n=2
+    sMax = (int)(sMax * 0.7);
 
     // Loop over the potential sums of digits
+    int sExpGood = -1;
     int num = 0;
     for (int sExp = sMin; sExp <= sMax; sExp++) {
         vector<int> sExpV = convertToVector(sExp, base);
@@ -312,8 +327,9 @@ vector<vector<int>> solveV(int base) {
             int sAct = sumOfDigits(sExpR);
             if (sAct == sExp) {
                 num++;
+                // cout << m << " ";
                 //cout << sp << " ";
-                //cout << ret << ": " << sExp << " ^ " << m << " : " << endl;
+                //cout << num << ": " << sExp << " ^ " << m << " : " << endl;
                 //cout << "Base notation:    ";
                 //out(inverse(sExpR));
                 //cout << endl;
@@ -323,11 +339,12 @@ vector<vector<int>> solveV(int base) {
                 //out(inverse(sExpRDec));
                 //cout << endl;
                 ret.push_back(inverse(power1(convertToVector(sExp, 10), m, 10)));
+                sExpGood = sExp;
             }
         }
         // cout << endl;
     }
-    // cout << endl;
+    cout << num << " sMax: " << sMax << " sMaxAct: " << sExpGood << " ratio: " << (double)sExpGood / (double)sMax << endl;
 
     sort(ret.begin(), ret.end(), compare);
     return ret;
@@ -335,25 +352,34 @@ vector<vector<int>> solveV(int base) {
 
 int main() {
 
+    int baseLongest = -1;
+    double timeLongest = 0;
+
     auto start = std::chrono::high_resolution_clock::now();
 
-    for (int base = 10; base <= 10; base++) {
+    for (int base = 2; base <= 1000; base++) {
 
-        cout << endl << "---------- Base " << base << " ----------" << endl;
+        cout << "---------- Base " << base << " ----------" << endl;
 
-        //auto start1 = std::chrono::high_resolution_clock::now();
+        auto start1 = std::chrono::high_resolution_clock::now();
         vector<vector<int>> res = solveV(base);
-        for (vector<int> v : res) {
-            out(v);
+        auto stop1 = std::chrono::high_resolution_clock::now();
+        auto duration1 = std::chrono::duration_cast<std::chrono::microseconds>(stop1 - start1);
+        double dS = duration1.count() / 1E6;
+        cout << "Time: " << dS << " seconds" << endl;
+
+        if (dS > timeLongest) {
+            timeLongest = dS;
+            baseLongest = base;
         }
-        cout << endl;
 
-        //auto stop1 = std::chrono::high_resolution_clock::now();
-        //auto duration1 = std::chrono::duration_cast<std::chrono::microseconds>(stop1 - start1);
+        // Print
+        //for (vector<int> v : res) {
+        //    out(v);
+        //}
+        //cout << endl;
 
-        //cout << "Time: " << duration1.count() / 1E6 << " seconds" << endl;
-
-        for (int i = 0; i < 1300; i++)
+        for (int i = 0; i < 35000; i++)
         {
             for (int j = 0; j < 500; j++)
             {
@@ -365,7 +391,8 @@ int main() {
     auto stop = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
 
-    cout << "Total time: " << duration.count() / 1E6 << " seconds" << endl;
+    cout << "Total time:   " << duration.count() / 1E6 << " seconds" << endl;
+    cout << "Longest time: " << timeLongest << " seconds for base " << baseLongest << endl;
 
     return 0;
 }
