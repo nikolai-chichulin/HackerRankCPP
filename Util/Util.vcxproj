@@ -127,6 +127,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="FactTests.cpp" />
     <ClCompile Include="IntegerAsVectors.cpp" />
     <ClCompile Include="IntegerAsVectorsTester.cpp" />
     <ClCompile Include="MultTests.cpp" />
@@ -134,6 +135,7 @@
     <ClCompile Include="SumTests.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="FactTests.h" />
     <ClInclude Include="IntegerAsVectors.h" />
     <ClInclude Include="IntegerAsVectorsTester.h" />
     <ClInclude Include="MultTests.h" />

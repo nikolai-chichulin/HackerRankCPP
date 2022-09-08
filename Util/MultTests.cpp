@@ -2,7 +2,7 @@
 
 bool multTest(vector<int> v, int a, vector<int> exp) {
 
-    vector<int> act = multuply(v, a);
+    vector<int> act = multiply(v, a);
 
     if (exp.size() != act.size()) {
         return false;
@@ -52,7 +52,7 @@ bool multTestsI() {
 
 bool multTest(vector<int> v1, vector<int> v2, vector<int> exp) {
 
-    vector<int> act = multuply(v1, v2);
+    vector<int> act = multiply(v1, v2);
 
     if (exp.size() != act.size()) {
         return false;

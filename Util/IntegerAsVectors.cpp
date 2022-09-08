@@ -51,7 +51,7 @@ vector<int> sum(vector<int> a, vector<int> b) {
 /// <param name="a">The first integer as a vector.</param>
 /// <param name="b">The second integer.</param>
 /// <returns></returns>
-vector<int> multuply(vector<int> a, int b) {
+vector<int> multiply(vector<int> a, int b) {
 
     vector<int> ret;
 
@@ -106,7 +106,7 @@ vector<int> multuply(vector<int> a, int b) {
 /// <param name="a">The first integer.</param>
 /// <param name="b">The second integer.</param>
 /// <returns></returns>
-vector<int> multuply(vector<int> a, vector<int> b) {
+vector<int> multiply(vector<int> a, vector<int> b) {
 
     vector<int> ret;
     for (int i = 0; i < b.size(); i++) {
@@ -147,19 +147,19 @@ vector<int> power(vector<int> v, int n) {
     }
 
     if (n == 2) {
-        return multuply(v, v);
+        return multiply(v, v);
     }
 
     int n2 = (int)(log(n) / log(2.));
     int rem = n % ((int)pow(2, n2));
 
-    vector<int> ret = multuply(v, v);
+    vector<int> ret = multiply(v, v);
     for (int i = 1; i < n2; i++) {
-        ret = multuply(ret, ret);
+        ret = multiply(ret, ret);
     }
 
     for (int i = 0; i < rem; i++) {
-        ret = multuply(ret, v);
+        ret = multiply(ret, v);
     }
 
     return ret;
@@ -179,7 +179,7 @@ vector<int> power(vector<int> v, int iv, int n) {
     }
 
     if (n == 2) {
-        powers[iv][n] = multuply(v, v);
+        powers[iv][n] = multiply(v, v);
         return powers[iv][n];
     }
 
@@ -191,13 +191,13 @@ vector<int> power(vector<int> v, int iv, int n) {
 
     for (int i = 1; i < n2; i++) {
         p *= 2;
-        ret = multuply(ret, ret);
+        ret = multiply(ret, ret);
         powers[iv][p] = ret;
     }
 
     for (int i = 0; i < rem; i++) {
         p += 1;
-        ret = multuply(ret, v);
+        ret = multiply(ret, v);
         powers[iv][p] = ret;
     }
 
@@ -216,7 +216,7 @@ vector<int> factorial(int a) {
         ret.push_back(1);
     }
     else {
-        ret = multuply(factorial(a - 1), a);
+        ret = multiply(factorial(a - 1), a);
     }
     return ret;
 }
