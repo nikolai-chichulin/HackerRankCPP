@@ -1,4 +1,6 @@
 #include "IntegerAsVectors.h"
+#include "Util.h"
+#include "SumTests.h"
 
 bool sumTest(vector<int> v1, vector<int> v2, vector<int> exp) {
 

@@ -8,6 +8,26 @@
 
 using namespace std;
 
+/// Compares two vectors. Returns true if the first is less than the second.
+bool lessthan(vector<int> v1, vector<int> v2)
+{
+    if (v1.size() < v2.size()) {
+        return true;
+    }
+    if (v1.size() > v2.size()) {
+        return false;
+    }
+    for (int i = 0; i < v1.size(); i++) {
+        if (v1[i] < v2[i]) {
+            return true;
+        }
+        else if (v1[i] > v2[i]) {
+            return false;
+        }
+    }
+    return false;
+}
+
 /// <summary>
 /// Returns sum of two integers represented as vectors.
 /// </summary>
@@ -40,6 +60,41 @@ vector<int> sum(vector<int> a, vector<int> b) {
     }
     if (c > 0) {
         ret.push_back(c);
+    }
+
+    return ret;
+}
+
+/// <summary>
+/// Subtracts a lesser (second) integer from a greater (first) one. Both are represented as vectors.
+/// The first value must be greater or equal to the second one.
+/// The result is NOT guaranteed otherwise.
+/// </summary>
+/// <param name="a">The first integer as a vector.</param>
+/// <param name="b">The second integer as a vector.</param>
+/// <returns></returns>
+vector<int> subtr(vector<int> a, vector<int> b) {
+
+    vector<int> ret;
+    int la = static_cast<int>(a.size());
+    int lb = static_cast<int>(b.size());
+    int lmax = max(la, lb);
+    int c = 0;
+    for (int i = 0; i < lmax; i++) {
+        int minuend = i < a.size() ? a[i] - c : -c;
+        int subtrahend = i < b.size() ? b[i] : 0;
+        c = 0;
+        if (minuend < subtrahend) {
+            minuend += 10;
+            c = 1;
+        }
+        int res = minuend - subtrahend;
+        ret.push_back(res);
+    }
+
+    // Erase the leading zeros
+    while (ret.size() > 1 && ret[ret.size() - 1] == 0) {
+        ret.erase(ret.end() - 1);
     }
 
     return ret;
@@ -140,6 +195,35 @@ vector<int> multiply(vector<int> a, vector<int> b) {
     return ret;
 }
 
+/// <summary>
+/// Division of one vector by another.
+/// </summary>
+/// <param name="v1"></param>
+/// <param name="v2"></param>
+/// <returns></returns>
+vector<int> divide(vector<int> v1, vector<int> v2) {
+
+    vector<int> ret;
+
+    if (lessthan(v1, v2)) {
+        ret.push_back(0);
+        return ret; // the first is less than the secons, return { 0 }
+    }
+
+    // Create a subvector
+    auto first = v1.end() - v2.size();
+    auto last = v1.end();
+    vector<int> subv = { first, last };
+    if (lessthan(subv, v2)) { // if less than the divisor, add 1 digit
+        last = v1.begin() + v2.size() + 1;
+        subv = { first, last };
+    }
+
+    //vector<int> res = 
+
+    return ret;
+}
+
 vector<int> power(vector<int> v, int n) {
 
     if (n == 0 || n == 1) {
@@ -219,4 +303,26 @@ vector<int> factorial(int a) {
         ret = multiply(factorial(a - 1), a);
     }
     return ret;
+}
+
+vector<int> facts[1000];
+
+/// <summary>
+/// Returns factorial as a vector of ints. Variant with memorization.
+/// </summary>
+/// <param name="a">The values to caculate factorial.</param>
+/// <returns></returns>
+vector<int> factorialM(int a) {
+
+    if (!facts[a].empty()) {
+        return facts[a];
+    }
+
+    if (a == 0 || a == 1) {
+        facts[a].push_back(1);
+    }
+    else {
+        facts[a] = multiply(factorial(a - 1), a);
+    }
+    return facts[a];
 }

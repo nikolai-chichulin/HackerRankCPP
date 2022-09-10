@@ -1,14 +1,6 @@
 #include "IntegerAsVectors.h"
+#include "Util.h"
 #include "PowerTests.h"
-
-vector<int> inverse(vector<int> v) {
-
-    vector<int> ret(v.size());
-    for (int i = 0; i < v.size(); i++) {
-        ret[i] = v[v.size() - 1 - i];
-    }
-    return ret;
-}
 
 bool powerTest(vector<int> v, int n, vector<int> exp)
 {

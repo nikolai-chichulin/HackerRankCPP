@@ -1,4 +1,6 @@
 #include "IntegerAsVectors.h"
+#include "Util.h"
+#include "FactTests.h"
 
 bool factTest(int a, vector<int> exp) {
 

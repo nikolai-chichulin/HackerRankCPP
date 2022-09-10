@@ -1,4 +1,6 @@
 #include "IntegerAsVectors.h"
+#include "Util.h"
+#include "MultTests.h"
 
 bool multTest(vector<int> v, int a, vector<int> exp) {
 
