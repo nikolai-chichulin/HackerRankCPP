@@ -13,6 +13,6 @@ int main() {
     cout << (powerTests() ? "Passed" : "Failed") << endl;
     cout << (powerTestsI() ? "Passed" : "Failed") << endl;
     cout << (subtrTests() ? "Passed" : "Failed") << endl;
-    //cout << (divTests() ? "Passed" : "Failed") << endl;
+    cout << (divTests() ? "Passed" : "Failed") << endl;
     return 0;
 }

@@ -3,6 +3,7 @@
 #include <vector>
 #include <iostream>
 #include <algorithm>
+#include <utility>
 
 #include "IntegerAsVectors.h"
 
@@ -17,7 +18,7 @@ bool lessthan(vector<int> v1, vector<int> v2)
     if (v1.size() > v2.size()) {
         return false;
     }
-    for (int i = 0; i < v1.size(); i++) {
+    for (int i = v1.size() - 1; i >= 0; i--) {
         if (v1[i] < v2[i]) {
             return true;
         }
@@ -26,6 +27,20 @@ bool lessthan(vector<int> v1, vector<int> v2)
         }
     }
     return false;
+}
+
+/// Compares two vectors. Returns true if the first is equal to the second.
+bool equalto(vector<int> v1, vector<int> v2)
+{
+    if (v1.size() != v2.size()) {
+        return false;
+    }
+    for (int i = v1.size() - 1; i >= 0; i--) {
+        if (v1[i] != v2[i]) {
+            return false;
+        }
+    }
+    return true;
 }
 
 /// <summary>
@@ -196,31 +211,71 @@ vector<int> multiply(vector<int> a, vector<int> b) {
 }
 
 /// <summary>
-/// Division of one vector by another.
+/// Division of one vector by another. Returns integer part of the result.
 /// </summary>
 /// <param name="v1"></param>
 /// <param name="v2"></param>
 /// <returns></returns>
-vector<int> divide(vector<int> v1, vector<int> v2) {
+pair<vector<int>, vector<int>> divide(vector<int> v1, vector<int> v2) {
 
-    vector<int> ret;
+    pair<vector<int>, vector<int>> ret;
 
     if (lessthan(v1, v2)) {
-        ret.push_back(0);
+        ret.first.push_back(0);
         return ret; // the first is less than the secons, return { 0 }
     }
 
     // Create a subvector
+    // "minuend" - "subtrahend"
     auto first = v1.end() - v2.size();
     auto last = v1.end();
-    vector<int> subv = { first, last };
-    if (lessthan(subv, v2)) { // if less than the divisor, add 1 digit
-        last = v1.begin() + v2.size() + 1;
-        subv = { first, last };
+    vector<int> minuend = { first, last };
+    vector<int> subtrahend(v2);
+
+    while (lessthan(minuend, subtrahend)) {
+        first--;
+        minuend = { first, last };
     }
 
-    //vector<int> res = 
+    // The first subtraction
+    int m = 1; // the maximal multiplicator
+    vector<int> subtrahendPrev;
+    do {
+        m++;
+        subtrahendPrev = subtrahend;
+        subtrahend = sum(v2, subtrahend);
+    } while (lessthan(subtrahend, minuend) || equalto(subtrahend, minuend));
+    ret.first.insert(ret.first.begin(), --m);
+    minuend = subtr(minuend, subtrahendPrev);
+    subtrahend = v2;
 
+    // The following subtractions to the begining of v1
+    while (first != v1.begin()) {
+        m = 1;
+        minuend.insert(minuend.begin(), *(--first));
+
+        // Erase the leading zeros
+        while (minuend.size() > 1 && minuend[minuend.size() - 1] == 0) {
+            minuend.erase(minuend.end() - 1);
+        }
+
+        // Move futher if less than the divisor
+        while (lessthan(minuend, subtrahend)) {
+            minuend.insert(minuend.begin(), *(--first));
+            ret.first.insert(ret.first.begin(), 0);
+        }
+
+        do {
+            m++;
+            subtrahendPrev = subtrahend;
+            subtrahend = sum(v2, subtrahend);
+        } while (lessthan(subtrahend, minuend) || equalto(subtrahend, minuend));
+        ret.first.insert(ret.first.begin(), --m);
+        minuend = subtr(minuend, subtrahendPrev);
+        subtrahend = v2;
+    }
+
+    ret.second = minuend;
     return ret;
 }
 
