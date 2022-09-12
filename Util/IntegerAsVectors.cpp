@@ -220,6 +220,19 @@ pair<vector<int>, vector<int>> divide(vector<int> v1, vector<int> v2) {
 
     pair<vector<int>, vector<int>> ret;
 
+    // Erase the leading zeros
+    while (v1.size() > 0 && v1[v1.size() - 1] == 0) {
+        v1.erase(v1.end() - 1);
+    }
+    while (v2.size() > 0 && v2[v2.size() - 1] == 0) {
+        v2.erase(v2.end() - 1);
+    }
+
+    // Zero divident or divider, return empty pair
+    if (v1.size() == 0 || v2.size() == 0) {
+        return ret;
+    }
+
     if (lessthan(v1, v2)) {
         ret.first.push_back(0);
         ret.second = v1;

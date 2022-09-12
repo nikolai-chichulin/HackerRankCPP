@@ -71,5 +71,26 @@ bool divTests()
         return false;
     }
 
+    v1 = { 0,0,0,9,9,9,9,9 };
+    v2 = { 0,0,7,7,0,7,7 };
+    exp = pair<vector<int>, vector<int>>({ 2,1 }, { 0,0,6,6,0,5,7 });
+    if (!divTest(v1, v2, exp)) {
+        return false;
+    }
+
+    v1 = { 0,0,0,9,9,9,9,9,0,0,0 };
+    v2 = { 0,0,7,7,0,7,7,0,0 };
+    exp = pair<vector<int>, vector<int>>({ 2,1 }, { 0,0,6,6,0,5,7 });
+    if (!divTest(v1, v2, exp)) {
+        return false;
+    }
+
+    v1 = { 1,1,0,0,0,0 };
+    v2 = { 0,0,0,0,0,0,0,0,0,0 };
+    exp = pair<vector<int>, vector<int>>({  }, {  });
+    if (!divTest(v1, v2, exp)) {
+        return false;
+    }
+
     return true;
 }
