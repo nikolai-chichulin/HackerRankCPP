@@ -228,8 +228,15 @@ pair<vector<int>, vector<int>> divide(vector<int> v1, vector<int> v2) {
         v2.erase(v2.end() - 1);
     }
 
-    // Zero divident or divider, return empty pair
-    if (v1.size() == 0 || v2.size() == 0) {
+    // Zero divident, return zero
+    if (v1.size() == 0) {
+        ret.first.push_back(0);
+        ret.second = v1;
+        return ret;
+    }
+
+    // Zero divider, return empty pair
+    if (v2.size() == 0) {
         return ret;
     }
 
@@ -416,4 +423,42 @@ vector<int> factorialM(int a) {
         facts[a] = multiply(factorial(a - 1), a);
     }
     return facts[a];
+}
+
+/// <summary>
+/// Composition of integer from the given basis.
+/// </summary>
+/// <param name="basis">The basis as an array of vectors.</param>
+/// <param name="terms">The terms to compose.</param>
+/// <param name="n">Number of basic numbers.</param>
+/// <returns></returns>
+vector<int> comp(vector<int> basis[], vector<int> terms[], int n)
+{
+    vector<int> ret;
+    for (int i = 0; i < n; i++) {
+        ret = sum(ret, multiply(terms[i], basis[i]));
+    }
+    return ret;
+}
+
+/// <summary>
+/// Decomposition of a big integer in a basis.
+/// </summary>
+/// <param name="v">The integer.</param>
+/// <param name="basis">The basis as an array of vectors.</param>
+/// <param name="n">Number of basic numbers.</param>
+/// <returns></returns>
+vector<int>* decomp(vector<int> v, vector<int> basis[], int n)
+{
+    vector<int>* ret = new vector<int>[n];
+    vector<int> rem = v;
+
+    // Assume the terms are in descending order: {99, 71, 33, 17...}
+    for (int i = 0; i < n; i++) {
+        pair<vector<int>, vector<int>> res = divide(rem, basis[i]);
+        ret[i] = res.first;
+        rem = res.second;
+    }
+
+    return ret;
 }

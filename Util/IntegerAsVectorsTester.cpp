@@ -4,6 +4,7 @@
 #include "MultTests.h"
 #include "PowerTests.h"
 #include "DivTests.h"
+#include "DecompTests.h"
 
 int main() {
 
@@ -14,5 +15,6 @@ int main() {
     cout << (powerTestsI() ? "Passed" : "Failed") << endl;
     cout << (subtrTests() ? "Passed" : "Failed") << endl;
     cout << (divTests() ? "Passed" : "Failed") << endl;
+    cout << (decompTests() ? "Passed" : "Failed") << endl;
     return 0;
 }
