@@ -476,7 +476,7 @@ ls decomp(ls v) {
 /// <param name="basis">The basis as an array of vectors.</param>
 /// <param name="n">Number of basic numbers.</param>
 /// <returns></returns>
-vl* decomp(vl v, vl basis[], ls n)
+vl* decomp(vl v, const vl basis[], ls n)
 {
     vl* ret = new vl[n];
     vl rem = v;
@@ -516,6 +516,57 @@ vl f(vl v) {
     }
     return ret;
 }
+
+/// <summary>
+/// Compares two g-s in the decomposed form.
+/// </summary>
+/// <param name="dg1">g1</param>
+/// <param name="dg2">g2</param>
+/// <param name="n"></param>
+/// <returns>True if g1 is less than g2</returns>
+bool compareG(vl* dg1, vl* dg2, ls n) {
+
+    vl digits1; // number of digits in g1
+    vl digits2; // number of digits in g2
+    for (int i = 0; i < n; i++) {
+        digits1 = sum(digits1, dg1[i]);
+        digits2 = sum(digits2, dg2[i]);
+    }
+
+    if (digits1 < digits2) {
+        return true;
+    }
+    else if (digits1 > digits2) {
+        return false;
+    }
+
+    // g1 and g2 have equal numbers of digits
+    // g1 and g2 are constructed as: 111...222...333...444...555...666...777...888...999... th be the minimum
+    // 0 stands for 9!, 1 for 8!,... (n-1) - for 1.
+    // starting from 1
+    for (ls i = n - 1; i >= 0; i--) {
+        if (lessthan(dg1[i], dg2[i])) {
+            return false;
+        }
+        else if (lessthan(dg2[i], dg1[i])) {
+            return true;
+        }
+    }
+    return false; // g1 and g2 are equal, return false
+}
+
+//vl composeG(vl* dg, ls n) {
+//
+//    vl ret;
+//    for (ls i = n - 1; i >= 0; i--) {
+//        while (true)
+//        {
+//
+//        }
+//    }
+//
+//    return ret;
+//}
 
 // Bruteforce
 void solveBF(ls n) {
@@ -570,38 +621,109 @@ void solveBF(ls n) {
 
 void solve() {
 
-    ls g[1000]{};
-    ls sfmax = 0;
-    ls ftemp[] = { 1,1,2,6,24,120,720,5040,40320,362880 }; // 0!, 1!,... 9!
-    ls iadd = 1;
-    for (ls ten = 0; ten <= 100; ten++) {
-        for (ls i = 0; i < 10; i++) {
+    const vl basis[] = { {0,8,8,2,6,3},{0,2,3,0,4},{0,4,0,5},{0,2,7},{0,2,1},{4,2},{6},{2},{1} };
+    const ls nb = 9;
 
-            ls n = i + 10 * ten;
-            vl f = convertToVector(ftemp[i], 10);
-            ls sf = sumOfDigits(f);
-            if (g[sf] == 0) {
-                g[sf] = n;
-                if (sf > sfmax) {
-                    sfmax = sf;
-                }
-                cout << "n = " << n << " f(n) = " << ftemp[i] << " sf(n) = " << sf << " g(sf) = " << n << endl;
-            }
-            else {
-                // cout << "n = " << n << " f(n) = " << f << " sf(n) = " << sf << " repeat" << endl;
-            }
-            ftemp[i] = facts[iadd] + facts[i];
-        }
-        iadd++;
+    ls n = 57;
+    ls nd = 57 / 9;
+    ls fd = 57 % 9;
+    if (fd > 0) {
+        nd++;
     }
 
-    cout << "Done. sfmax = " << sfmax << endl;
+    // the base fgn has the following form: fd - first digit, then go (nd-1) nines: fd9...9
+    // then we replace one nine (9) with eight (8):
+    // fd9...8...9; 8 is placed at the index i8
+    // So, sum of the digits is n
+    vl* gnMin = NULL;
+    vl* gn = NULL;
+    vl fgn;
+    vl fgnMin;
+    for (ls i8 = 1; i8 < nd; i8++) {
+
+        fgn.clear();
+        // compose fgn
+        fgn.push_back(fd);
+        for (ls i = 1; i < i8; i++) {
+            fgn.push_back(9);
+        }
+        fgn.push_back(8);
+        for (ls i = i8 + 1; i < nd; i++) {
+            fgn.push_back(9);
+        }
+        out(fgn);
+        cout << " : sum of digits = " << sumOfDigits(fgn) << endl;
+
+        // decompose gn
+        gnMin = gn;
+        gn = decomp(inverse(fgn), basis, nb);
+        vl ndigits;
+        for (ls i = 0; i < nb; i++) {
+            out(inverse(gn[i]));
+            if (i == nb - 1) {
+                cout << "*" << nb - i << "!";
+            }
+            else {
+                cout << "*" << nb - i << "! + ";
+            }
+            ndigits = sum(ndigits, gn[i]);
+        }
+        cout << " Number of digits in g1: ";
+        out(inverse(ndigits));
+        cout << endl;
+
+        if (gnMin != NULL) {
+            bool g1IsLess = compareG(gn, gnMin, nb);
+            if (g1IsLess) {
+                gnMin = gn;
+                fgnMin = fgn;
+                cout << "fgn is less!" << endl;
+            }
+            else {
+                cout << "fgn is greater!" << endl;
+            }
+        }
+    }
+    cout << "Done!" << endl;
+
+    //vl v1{ 3,9,9,9,9,9,8 };
+    //out(v1);
+    //cout << " : sum of digits = " << sumOfDigits(v1) << endl;
+
+    //vl* act1 = decomp(inverse(v1), basis, nb);
+
+    //vl digits1;
+    //for (int i = 0; i < nb; i++) {
+    //    out(inverse(act1[i]));
+    //    cout << "*9!+";
+    //    digits1 = sum(digits1, act1[i]);
+    //}
+    //cout << " Number of digits in g1: ";
+    //out(inverse(digits1));
+    //cout << endl;
+
+    //vl v2{ 3,9,9,9,9,8,9 };
+    //out(v2);
+    //cout << " : sum of digits = " << sumOfDigits(v2) << endl;
+
+    //vl* act2 = decomp(inverse(v2), basis, nb);
+
+    //vl digits2;
+    //for (int i = 0; i < nb; i++) {
+    //    out(inverse(act2[i]));
+    //    cout << " ";
+    //    digits2 = sum(digits2, act2[i]);
+    //}
+    //cout << " Number of digits in g2: ";
+    //out(inverse(digits2));
+    //cout << endl;
+
 }
 
 int main() {
 
     // solveBF(50);
-    // solve();
+    solve();
 
     //ls dc = decomp(379999);
     //dc = decomp(488899);
@@ -622,25 +744,6 @@ int main() {
     //    cout << i << " sg = " << sum << " S = " << sg << endl;
     //    i++;
     //}
-
-    vl basis[] = { {0,8,8,2,6,3},{0,2,3,0,4},{0,4,0,5},{0,2,7},{0,2,1},{4,2},{6},{2},{1} };
-    ls n = 9;
-
-    vl v{ 3,9,9,9,9,8,9 };
-    out(v);
-    cout << " : sum of digits = " << sumOfDigits(v) << endl;
-
-    vl* act = decomp(inverse(v), basis, n);
-
-    vl digits;
-    for (int i = 0; i < n; i++) {
-        out(inverse(act[i]));
-        cout << " ";
-        digits = sum(digits, act[i]);
-    }
-    cout << " Number of digits in g: ";
-    out(inverse(digits));
-    cout << endl;
 
     return 0;
 }
