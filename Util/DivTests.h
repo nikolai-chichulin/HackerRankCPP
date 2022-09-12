@@ -3,7 +3,7 @@
 
 #include "IntegerAsVectors.h"
 
-bool divTest(int a, vector<int> exp);
+bool divTest(vector<int> v1, vector<int> v2, pair<vector<int>, vector<int>> exp);
 bool divTests();
 
 #endif // !DIV_TESTS_H
