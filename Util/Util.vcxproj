@@ -127,7 +127,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="DecompTests.cpp" />
+    <ClCompile Include="CompDecompTests.cpp" />
     <ClCompile Include="DivTests.cpp" />
     <ClCompile Include="FactTests.cpp" />
     <ClCompile Include="IntegerAsVectors.cpp" />
@@ -139,7 +139,7 @@
     <ClCompile Include="Util.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="DecompTests.h" />
+    <ClInclude Include="CompDecompTests.h" />
     <ClInclude Include="DivTests.h" />
     <ClInclude Include="FactTests.h" />
     <ClInclude Include="IntegerAsVectors.h" />

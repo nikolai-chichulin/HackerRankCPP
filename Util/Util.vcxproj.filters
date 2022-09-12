@@ -42,7 +42,7 @@
     <ClCompile Include="Util.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="DecompTests.cpp">
+    <ClCompile Include="CompDecompTests.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>
@@ -74,7 +74,7 @@
     <ClInclude Include="Util.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="DecompTests.h">
+    <ClInclude Include="CompDecompTests.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>
