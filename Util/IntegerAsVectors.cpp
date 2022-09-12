@@ -211,7 +211,7 @@ vector<int> multiply(vector<int> a, vector<int> b) {
 }
 
 /// <summary>
-/// Division of one vector by another. Returns integer part of the result.
+/// Division of one vector by another. Returns integer part of the result and the remainder.
 /// </summary>
 /// <param name="v1"></param>
 /// <param name="v2"></param>
@@ -222,6 +222,7 @@ pair<vector<int>, vector<int>> divide(vector<int> v1, vector<int> v2) {
 
     if (lessthan(v1, v2)) {
         ret.first.push_back(0);
+        ret.second = v1;
         return ret; // the first is less than the secons, return { 0 }
     }
 
@@ -232,7 +233,7 @@ pair<vector<int>, vector<int>> divide(vector<int> v1, vector<int> v2) {
     vector<int> minuend = { first, last };
     vector<int> subtrahend(v2);
 
-    while (lessthan(minuend, subtrahend)) {
+    while (first != v1.begin() && lessthan(minuend, subtrahend)) {
         first--;
         minuend = { first, last };
     }
@@ -259,12 +260,25 @@ pair<vector<int>, vector<int>> divide(vector<int> v1, vector<int> v2) {
             minuend.erase(minuend.end() - 1);
         }
 
-        // Move futher if less than the divisor
+        bool done = false;
+        // If the divident is less than the divider:
         while (lessthan(minuend, subtrahend)) {
-            minuend.insert(minuend.begin(), *(--first));
-            ret.first.insert(ret.first.begin(), 0);
+            if (first == v1.begin()) { // if we reached the bigining, add 0 and stop
+                ret.first.insert(ret.first.begin(), 0);
+                done = true;
+                break;
+            }
+            else { // move futher otherwise
+                minuend.insert(minuend.begin(), *(--first));
+                ret.first.insert(ret.first.begin(), 0);
+            }
         }
 
+        if (done) {
+            break;
+        }
+
+        // Find the next digit
         do {
             m++;
             subtrahendPrev = subtrahend;
