@@ -1,3 +1,5 @@
+#include "IntegerAsVectors.h"
+#include "Util.h"
 #include "CompDecompTests.h"
 
 bool compTest(vector<int> basis[], vector<int> terms[], int n, vector<int> exp)
@@ -44,15 +46,22 @@ bool decompTests()
     vector<int> basis[] = { {0,8,8,2,6,3},{0,2,3,0,4},{0,4,0,5},{0,2,7},{0,2,1},{4,2},{6},{2},{1} };
     int n = 9;
 
-    vector<int> v1{ 6,2,1,2,5,2,1 };
-    vector<int> exp1[]{ {3},{4},{0},{3},{0},{1},{3},{2},{0} };
-    if (!decompTest(v1, basis, n, exp1)) {
-        return false;
-    }
+    //vector<int> v1{ 6,2,1,2,5,2,1 };
+    //vector<int> exp1[]{ {3},{4},{0},{3},{0},{1},{3},{2},{0} };
+    //if (!decompTest(v1, basis, n, exp1)) {
+    //    return false;
+    //}
 
-    vector<int> v2{ 7,3,1,4,8,9,5,3,4,2,1,5,4,8,9,1,7 };
-    vector<int> exp2[]{ {8,3,8,8,1,0,0,7,3,8,9,1},{1},{2},{0},{2},{2},{1},{1},{1} };
-    if (!decompTest(v2, basis, n, exp2)) {
+    //vector<int> v2{ 7,3,1,4,8,9,5,3,4,2,1,5,4,8,9,1,7 };
+    //vector<int> exp2[]{ {8,3,8,8,1,0,0,7,3,8,9,1},{1},{2},{0},{2},{2},{1},{1},{1} };
+    //if (!decompTest(v2, basis, n, exp2)) {
+    //    return false;
+    //}
+
+    vector<int> v3{ 4,8,9,9,9,9,9 };
+    v3 = inverse(v3);
+    vector<int> exp3[]{ {8,3,8,8,1,0,0,7,3,8,9,1},{1},{2},{0},{2},{2},{1},{1},{1} };
+    if (!decompTest(v3, basis, n, exp3)) {
         return false;
     }
 
