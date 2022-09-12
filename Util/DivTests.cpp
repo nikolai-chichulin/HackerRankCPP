@@ -43,6 +43,13 @@ bool divTests()
         return false;
     }
 
+    v1 = { 9,8,2,6,4 };
+    v2 = { 4,5,6 };
+    exp = pair<vector<int>, vector<int>>({ 0,7 }, { 9,0,5 });
+    if (!divTest(v1, v2, exp)) {
+        return false;
+    }
+
     v1 = { 4,5,2 };
     v2 = { 1 };
     exp = pair<vector<int>, vector<int>>({ 4,5,2 }, { 0 });

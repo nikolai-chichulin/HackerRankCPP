@@ -233,10 +233,18 @@ pair<vector<int>, vector<int>> divide(vector<int> v1, vector<int> v2) {
         return ret;
     }
 
+    // Divident is lesser than the divider, return {{0},{v1}}
     if (lessthan(v1, v2)) {
         ret.first.push_back(0);
         ret.second = v1;
-        return ret; // the first is less than the secons, return { 0 }
+        return ret;
+    }
+
+    // The divider is equal to 1
+    if (v2.size() == 1 && v2[0] == 1) {
+        ret.first = v1;
+        ret.second.push_back({ 0 });
+        return ret;
     }
 
     // Create a subvector
@@ -246,6 +254,7 @@ pair<vector<int>, vector<int>> divide(vector<int> v1, vector<int> v2) {
     vector<int> minuend = { first, last };
     vector<int> subtrahend(v2);
 
+    // If the subvector is less than the divider, add the next digit
     while (first != v1.begin() && lessthan(minuend, subtrahend)) {
         first--;
         minuend = { first, last };
