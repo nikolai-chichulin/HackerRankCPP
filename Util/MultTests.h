@@ -1,9 +1,11 @@
 #ifndef MULT_TESTS_H
 #define MULT_TESTS_H
 
+#include "typedefs.h"
+
 #include "IntegerAsVectors.h"
 
-bool multTest(vector<int> v1, vector<int> v2, vector<int> exp);
+bool multTest(vl v1, vl v2, vl exp);
 bool multTestsI();
 bool multTestsV();
 

@@ -1,16 +1,18 @@
+#include "typedefs.h"
+
 #include "IntegerAsVectors.h"
 #include "Util.h"
 #include "FactTests.h"
 
-bool factTest(int a, vector<int> exp) {
+bool factTest(ls a, vl exp) {
 
-    vector<int> act = factorial(a);
+    vl act = factorial(a);
 
     if (exp.size() != act.size()) {
         return false;
     }
 
-    for (int i = 0; i < exp.size(); i++) {
+    for (ls i = 0; i < exp.size(); i++) {
         if (exp[i] != act[i]) {
             return false;
         }
@@ -21,8 +23,8 @@ bool factTest(int a, vector<int> exp) {
 
 bool factTests() {
 
-    int a = 0;
-    vector<int> exp = { 1 };
+    ls a = 0;
+    vl exp = { 1 };
     if (!factTest(a, exp)) {
         return false;
     }

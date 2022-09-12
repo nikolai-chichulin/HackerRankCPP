@@ -1,16 +1,18 @@
+#include "typedefs.h"
+
 #include "IntegerAsVectors.h"
 #include "Util.h"
 #include "SubtrTests.h"
 
-bool subtrTest(vector<int> v1, vector<int> v2, vector<int> exp)
+bool subtrTest(vl v1, vl v2, vl exp)
 {
-    vector<int> act = subtr(v1, v2);
+    vl act = subtr(v1, v2);
 
     if (exp.size() != act.size()) {
         return false;
     }
 
-    for (int i = 0; i < exp.size(); i++) {
+    for (ls i = 0; i < exp.size(); i++) {
         if (exp[i] != act[i]) {
             return false;
         }
@@ -21,9 +23,9 @@ bool subtrTest(vector<int> v1, vector<int> v2, vector<int> exp)
 
 bool subtrTests()
 {
-    vector<int> v1 = { 1 };
-    vector<int> v2 = { 1 };
-    vector<int> exp = { 0 };
+    vl v1 = { 1 };
+    vl v2 = { 1 };
+    vl exp = { 0 };
     if (!subtrTest(v1, v2, exp)) {
         return false;
     }

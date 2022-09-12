@@ -1,8 +1,10 @@
 #ifndef UTIL_H
 #define UTIL_H
 
+#include "typedefs.h"
+
 #include "IntegerAsVectors.h"
 
-vector<int> inverse(vector<int> v);
+vl inverse(vl v);
 
 #endif // !UTIL_H

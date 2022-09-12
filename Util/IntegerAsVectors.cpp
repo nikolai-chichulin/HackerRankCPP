@@ -5,12 +5,14 @@
 #include <algorithm>
 #include <utility>
 
+#include "typedefs.h"
+
 #include "IntegerAsVectors.h"
 
 using namespace std;
 
 /// Compares two vectors. Returns true if the first is less than the second.
-bool lessthan(vector<int> v1, vector<int> v2)
+bool lessthan(vl v1, vl v2)
 {
     if (v1.size() < v2.size()) {
         return true;
@@ -18,7 +20,7 @@ bool lessthan(vector<int> v1, vector<int> v2)
     if (v1.size() > v2.size()) {
         return false;
     }
-    for (int i = v1.size() - 1; i >= 0; i--) {
+    for (ls i = (ls)v1.size() - 1; i >= 0; i--) {
         if (v1[i] < v2[i]) {
             return true;
         }
@@ -30,12 +32,12 @@ bool lessthan(vector<int> v1, vector<int> v2)
 }
 
 /// Compares two vectors. Returns true if the first is equal to the second.
-bool equalto(vector<int> v1, vector<int> v2)
+bool equalto(vl v1, vl v2)
 {
     if (v1.size() != v2.size()) {
         return false;
     }
-    for (int i = v1.size() - 1; i >= 0; i--) {
+    for (ls i = (ls)v1.size() - 1; i >= 0; i--) {
         if (v1[i] != v2[i]) {
             return false;
         }
@@ -49,26 +51,26 @@ bool equalto(vector<int> v1, vector<int> v2)
 /// <param name="a">The first integer as a vector.</param>
 /// <param name="b">The second integer as a vector.</param>
 /// <returns></returns>
-vector<int> sum(vector<int> a, vector<int> b) {
+vl sum(vl a, vl b) {
 
-    vector<int> ret;
-    int la = static_cast<int>(a.size());
-    int lb = static_cast<int>(b.size());
-    int lmin = min(la, lb);
-    int lmax = max(la, lb);
-    int c = 0;
-    for (int i = 0; i < lmin; i++) {
-        int res = a[i] + b[i] + c;
-        int rem = res % 10;
+    vl ret;
+    ls la = static_cast<ls>(a.size());
+    ls lb = static_cast<ls>(b.size());
+    ls lmin = min(la, lb);
+    ls lmax = max(la, lb);
+    ls c = 0;
+    for (ls i = 0; i < lmin; i++) {
+        ls res = a[i] + b[i] + c;
+        ls rem = res % 10;
         c = res / 10;
         ret.push_back(rem);
     }
 
     if (la != lb) {
         bool aig = la >= lb;
-        for (int i = lmin; i < lmax; i++) {
-            int res = (aig ? a[i] : b[i]) + c;
-            int rem = res % 10;
+        for (ls i = lmin; i < lmax; i++) {
+            ls res = (aig ? a[i] : b[i]) + c;
+            ls rem = res % 10;
             c = res / 10;
             ret.push_back(rem);
         }
@@ -88,22 +90,22 @@ vector<int> sum(vector<int> a, vector<int> b) {
 /// <param name="a">The first integer as a vector.</param>
 /// <param name="b">The second integer as a vector.</param>
 /// <returns></returns>
-vector<int> subtr(vector<int> a, vector<int> b) {
+vl subtr(vl a, vl b) {
 
-    vector<int> ret;
-    int la = static_cast<int>(a.size());
-    int lb = static_cast<int>(b.size());
-    int lmax = max(la, lb);
-    int c = 0;
-    for (int i = 0; i < lmax; i++) {
-        int minuend = i < a.size() ? a[i] - c : -c;
-        int subtrahend = i < b.size() ? b[i] : 0;
+    vl ret;
+    ls la = static_cast<ls>(a.size());
+    ls lb = static_cast<ls>(b.size());
+    ls lmax = max(la, lb);
+    ls c = 0;
+    for (ls i = 0; i < lmax; i++) {
+        ls minuend = i < a.size() ? a[i] - c : -c;
+        ls subtrahend = i < b.size() ? b[i] : 0;
         c = 0;
         if (minuend < subtrahend) {
             minuend += 10;
             c = 1;
         }
-        int res = minuend - subtrahend;
+        ls res = minuend - subtrahend;
         ret.push_back(res);
     }
 
@@ -121,11 +123,11 @@ vector<int> subtr(vector<int> a, vector<int> b) {
 /// <param name="a">The first integer as a vector.</param>
 /// <param name="b">The second integer.</param>
 /// <returns></returns>
-vector<int> multiply(vector<int> a, int b) {
+vl multiply(vl a, ls b) {
 
-    vector<int> ret;
+    vl ret;
 
-    int o = (int)log10(b) + 1; // number of orders
+    ls o = (ls)log10(b) + 1; // number of orders
 
     if (b == 0) {
         ret.push_back(0);
@@ -134,24 +136,24 @@ vector<int> multiply(vector<int> a, int b) {
         ret = a;
     }
     else {
-        int m = b;
-        for (int io = 0; io < o; io++) {
+        ls m = b;
+        for (ls io = 0; io < o; io++) {
 
             // Current vector
-            vector<int> retCurr;
+            vl retCurr;
 
             // Add leading zeroes
-            for (int j = 0; j < io; j++) {
+            for (ls j = 0; j < io; j++) {
                 retCurr.push_back(0);
             }
 
             // Multiplication
-            int mm = m % 10;
-            int c = 0;
-            for (int ai : a) {
+            ls mm = m % 10;
+            ls c = 0;
+            for (ls ai : a) {
 
-                int res = ai * mm + c;
-                int rem = res % 10;
+                ls res = ai * mm + c;
+                ls rem = res % 10;
                 c = res / 10;
                 retCurr.push_back(rem);
             }
@@ -171,31 +173,31 @@ vector<int> multiply(vector<int> a, int b) {
 }
 
 /// <summary>
-/// Returns multiplication of two integers represented as vectors of int.
+/// Returns multiplication of two integers represented as vectors of ls.
 /// </summary>
 /// <param name="a">The first integer.</param>
 /// <param name="b">The second integer.</param>
 /// <returns></returns>
-vector<int> multiply(vector<int> a, vector<int> b) {
+vl multiply(vl a, vl b) {
 
-    vector<int> ret;
-    for (int i = 0; i < b.size(); i++) {
+    vl ret;
+    for (ls i = 0; i < b.size(); i++) {
 
         // Current vector
-        vector<int> retCurr;
+        vl retCurr;
 
         // Add leading zeroes
-        for (int j = 0; j < i; j++) {
+        for (ls j = 0; j < i; j++) {
             retCurr.push_back(0);
         }
 
         // Multiplication
-        int mm = b[i];
-        int c = 0;
-        for (int ai : a) {
+        ls mm = b[i];
+        ls c = 0;
+        for (ls ai : a) {
 
-            int res = ai * mm + c;
-            int rem = res % 10;
+            ls res = ai * mm + c;
+            ls rem = res % 10;
             c = res / 10;
             retCurr.push_back(rem);
         }
@@ -216,9 +218,9 @@ vector<int> multiply(vector<int> a, vector<int> b) {
 /// <param name="v1"></param>
 /// <param name="v2"></param>
 /// <returns></returns>
-pair<vector<int>, vector<int>> divide(vector<int> v1, vector<int> v2) {
+pair<vl, vl> divide(vl v1, vl v2) {
 
-    pair<vector<int>, vector<int>> ret;
+    pair<vl, vl> ret;
 
     // Erase the leading zeros
     while (v1.size() > 0 && v1[v1.size() - 1] == 0) {
@@ -258,8 +260,8 @@ pair<vector<int>, vector<int>> divide(vector<int> v1, vector<int> v2) {
     // "minuend" - "subtrahend"
     auto first = v1.end() - v2.size();
     auto last = v1.end();
-    vector<int> minuend = { first, last };
-    vector<int> subtrahend(v2);
+    vl minuend = { first, last };
+    vl subtrahend(v2);
 
     // If the subvector is less than the divider, add the next digit
     while (first != v1.begin() && lessthan(minuend, subtrahend)) {
@@ -268,8 +270,8 @@ pair<vector<int>, vector<int>> divide(vector<int> v1, vector<int> v2) {
     }
 
     // The first subtraction
-    int m = 1; // the maximal multiplicator
-    vector<int> subtrahendPrev;
+    ls m = 1; // the maximal multiplicator
+    vl subtrahendPrev;
     do {
         m++;
         subtrahendPrev = subtrahend;
@@ -322,7 +324,7 @@ pair<vector<int>, vector<int>> divide(vector<int> v1, vector<int> v2) {
     return ret;
 }
 
-vector<int> power(vector<int> v, int n) {
+vl power(vl v, ls n) {
 
     if (n == 0 || n == 1) {
         return v;
@@ -332,24 +334,24 @@ vector<int> power(vector<int> v, int n) {
         return multiply(v, v);
     }
 
-    int n2 = (int)(log(n) / log(2.));
-    int rem = n % ((int)pow(2, n2));
+    ls n2 = (ls)(log(n) / log(2.));
+    ls rem = n % ((ls)pow(2, n2));
 
-    vector<int> ret = multiply(v, v);
-    for (int i = 1; i < n2; i++) {
+    vl ret = multiply(v, v);
+    for (ls i = 1; i < n2; i++) {
         ret = multiply(ret, ret);
     }
 
-    for (int i = 0; i < rem; i++) {
+    for (ls i = 0; i < rem; i++) {
         ret = multiply(ret, v);
     }
 
     return ret;
 }
 
-vector<int> powers[1300][500];
+vl powers[1300][500];
 
-vector<int> power(vector<int> v, int iv, int n) {
+vl power(vl v, ls iv, ls n) {
 
     if (!powers[iv][n].empty()) {
         return powers[iv][n];
@@ -365,19 +367,19 @@ vector<int> power(vector<int> v, int iv, int n) {
         return powers[iv][n];
     }
 
-    int n2 = (int)(log(n) / log(2.));
-    int rem = n % ((int)pow(2, n2));
+    ls n2 = (ls)(log(n) / log(2.));
+    ls rem = n % ((ls)pow(2, n2));
 
-    vector<int> ret = power(v, iv, 2); // multuply(v, v);
-    int p = 2; // power of 2
+    vl ret = power(v, iv, 2); // multuply(v, v);
+    ls p = 2; // power of 2
 
-    for (int i = 1; i < n2; i++) {
+    for (ls i = 1; i < n2; i++) {
         p *= 2;
         ret = multiply(ret, ret);
         powers[iv][p] = ret;
     }
 
-    for (int i = 0; i < rem; i++) {
+    for (ls i = 0; i < rem; i++) {
         p += 1;
         ret = multiply(ret, v);
         powers[iv][p] = ret;
@@ -391,9 +393,9 @@ vector<int> power(vector<int> v, int iv, int n) {
 /// </summary>
 /// <param name="a">The values to caculate factorial.</param>
 /// <returns></returns>
-vector<int> factorial(int a) {
+vl factorial(ls a) {
 
-    vector<int> ret;
+    vl ret;
     if (a == 0 || a == 1) {
         ret.push_back(1);
     }
@@ -403,14 +405,14 @@ vector<int> factorial(int a) {
     return ret;
 }
 
-vector<int> facts[1000];
+vl facts[1000];
 
 /// <summary>
 /// Returns factorial as a vector of ints. Variant with memorization.
 /// </summary>
 /// <param name="a">The values to caculate factorial.</param>
 /// <returns></returns>
-vector<int> factorialM(int a) {
+vl factorialM(ls a) {
 
     if (!facts[a].empty()) {
         return facts[a];
@@ -432,10 +434,10 @@ vector<int> factorialM(int a) {
 /// <param name="terms">The terms to compose.</param>
 /// <param name="n">Number of basic numbers.</param>
 /// <returns></returns>
-vector<int> comp(vector<int> basis[], vector<int> terms[], int n)
+vl comp(vl basis[], vl terms[], ls n)
 {
-    vector<int> ret;
-    for (int i = 0; i < n; i++) {
+    vl ret;
+    for (ls i = 0; i < n; i++) {
         ret = sum(ret, multiply(terms[i], basis[i]));
     }
     return ret;
@@ -448,14 +450,14 @@ vector<int> comp(vector<int> basis[], vector<int> terms[], int n)
 /// <param name="basis">The basis as an array of vectors.</param>
 /// <param name="n">Number of basic numbers.</param>
 /// <returns></returns>
-vector<int>* decomp(vector<int> v, vector<int> basis[], int n)
+vl* decomp(vl v, vl basis[], ls n)
 {
-    vector<int>* ret = new vector<int>[n];
-    vector<int> rem = v;
+    vl* ret = new vl[n];
+    vl rem = v;
 
     // Assume the terms are in descending order: {99, 71, 33, 17...}
-    for (int i = 0; i < n; i++) {
-        pair<vector<int>, vector<int>> res = divide(rem, basis[i]);
+    for (ls i = 0; i < n; i++) {
+        pair<vl, vl> res = divide(rem, basis[i]);
         ret[i] = res.first;
         rem = res.second;
     }

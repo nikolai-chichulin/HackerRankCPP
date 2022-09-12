@@ -1,9 +1,9 @@
 #include "Util.h"
 
-vector<int> inverse(vector<int> v) {
+vl inverse(vl v) {
 
-    vector<int> ret(v.size());
-    for (int i = 0; i < v.size(); i++) {
+    vl ret(v.size());
+    for (ls i = 0; i < v.size(); i++) {
         ret[i] = v[v.size() - 1 - i];
     }
     return ret;

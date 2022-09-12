@@ -7,21 +7,23 @@
 #include <iostream>
 #include <algorithm>
 
+#include "typedefs.h"
+
 using namespace std;
 
-bool lessthan(vector<int> v1, vector<int> v2);
-bool equalto(vector<int> v1, vector<int> v2);
+bool lessthan(vl v1, vl v2);
+bool equalto(vl v1, vl v2);
 
-vector<int> sum(vector<int> a, vector<int> b);
-vector<int> subtr(vector<int> a, vector<int> b);
-vector<int> multiply(vector<int> a, int b);
-vector<int> multiply(vector<int> a, vector<int> b);
-vector<int> power(vector<int> v, int n);
-vector<int> power(vector<int> v, int i, int n);
-pair<vector<int>, vector<int>> divide(vector<int> v1, vector<int> v2);
-vector<int> factorial(int a);
-vector<int> factorialM(int a);
-vector<int> comp(vector<int> basis[], vector<int> terms[], int n); // composition of a number from the given basis
-vector<int>* decomp(vector<int> v, vector<int> basis[], int n); // decomposition of a number in the given basis
+vl sum(vl a, vl b);
+vl subtr(vl a, vl b);
+vl multiply(vl a, ls b);
+vl multiply(vl a, vl b);
+vl power(vl v, ls n);
+vl power(vl v, ls i, ls n);
+pair<vl, vl> divide(vl v1, vl v2);
+vl factorial(ls a);
+vl factorialM(ls a);
+vl comp(vl basis[], vl terms[], ls n); // composition of a number from the given basis
+vl* decomp(vl v, vl basis[], ls n); // decomposition of a number in the given basis
 
 #endif // !INTEGER_AS_VECTORS_H

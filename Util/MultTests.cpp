@@ -1,16 +1,18 @@
+#include "typedefs.h"
+
 #include "IntegerAsVectors.h"
 #include "Util.h"
 #include "MultTests.h"
 
-bool multTest(vector<int> v, int a, vector<int> exp) {
+bool multTest(vl v, ls a, vl exp) {
 
-    vector<int> act = multiply(v, a);
+    vl act = multiply(v, a);
 
     if (exp.size() != act.size()) {
         return false;
     }
 
-    for (int i = 0; i < exp.size(); i++) {
+    for (ls i = 0; i < exp.size(); i++) {
         if (exp[i] != act[i]) {
             return false;
         }
@@ -21,9 +23,9 @@ bool multTest(vector<int> v, int a, vector<int> exp) {
 
 bool multTestsI() {
 
-    vector<int> v = { 1 };
-    int a = 0;
-    vector<int> exp = { 0 };
+    vl v = { 1 };
+    ls a = 0;
+    vl exp = { 0 };
     if (!multTest(v, a, exp)) {
         return false;
     }
@@ -52,15 +54,15 @@ bool multTestsI() {
     return true;
 }
 
-bool multTest(vector<int> v1, vector<int> v2, vector<int> exp) {
+bool multTest(vl v1, vl v2, vl exp) {
 
-    vector<int> act = multiply(v1, v2);
+    vl act = multiply(v1, v2);
 
     if (exp.size() != act.size()) {
         return false;
     }
 
-    for (int i = 0; i < exp.size(); i++) {
+    for (ls i = 0; i < exp.size(); i++) {
         if (exp[i] != act[i]) {
             return false;
         }
@@ -71,9 +73,9 @@ bool multTest(vector<int> v1, vector<int> v2, vector<int> exp) {
 
 bool multTestsV() {
 
-    vector<int> v1 = { 0 };
-    vector<int> v2 = { 5, 2, 3, 2, 9, 1 };
-    vector<int> exp = { 0, 0, 0, 0, 0, 0 };
+    vl v1 = { 0 };
+    vl v2 = { 5, 2, 3, 2, 9, 1 };
+    vl exp = { 0, 0, 0, 0, 0, 0 };
     if (!multTest(v1, v2, exp)) {
         return false;
     }

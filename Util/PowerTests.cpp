@@ -1,16 +1,18 @@
+#include "typedefs.h"
+
 #include "IntegerAsVectors.h"
 #include "Util.h"
 #include "PowerTests.h"
 
-bool powerTest(vector<int> v, int n, vector<int> exp)
+bool powerTest(vl v, ls n, vl exp)
 {
-    vector<int> act = power(v, n);
+    vl act = power(v, n);
 
     if (exp.size() != act.size()) {
         return false;
     }
 
-    for (int i = 0; i < exp.size(); i++) {
+    for (ls i = 0; i < exp.size(); i++) {
         if (exp[i] != act[i]) {
             return false;
         }
@@ -22,9 +24,9 @@ bool powerTest(vector<int> v, int n, vector<int> exp)
 bool powerTests()
 {
     // 1^0 = 1
-    vector<int> v = { 1 };
-    int a = 0;
-    vector<int> exp = { 1 };
+    vl v = { 1 };
+    ls a = 0;
+    vl exp = { 1 };
     if (!powerTest(v, a, exp)) {
         return false;
     }
@@ -89,15 +91,15 @@ bool powerTests()
     return true;
 }
 
-bool powerTest(vector<int> v, int i, int n, vector<int> exp)
+bool powerTest(vl v, ls i, ls n, vl exp)
 {
-    vector<int> act = power(v, i, n);
+    vl act = power(v, i, n);
 
     if (exp.size() != act.size()) {
         return false;
     }
 
-    for (int i = 0; i < exp.size(); i++) {
+    for (ls i = 0; i < exp.size(); i++) {
         if (exp[i] != act[i]) {
             return false;
         }
@@ -109,10 +111,10 @@ bool powerTest(vector<int> v, int i, int n, vector<int> exp)
 bool powerTestsI()
 {
     // 1^0 = 1
-    vector<int> v = { 1 };
-    int i = 1;
-    int a = 0;
-    vector<int> exp = { 1 };
+    vl v = { 1 };
+    ls i = 1;
+    ls a = 0;
+    vl exp = { 1 };
     if (!powerTest(v, i, a, exp)) {
         return false;
     }

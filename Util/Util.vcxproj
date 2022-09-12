@@ -148,6 +148,7 @@
     <ClInclude Include="PowerTests.h" />
     <ClInclude Include="SubtrTests.h" />
     <ClInclude Include="SumTests.h" />
+    <ClInclude Include="typedefs.h" />
     <ClInclude Include="Util.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

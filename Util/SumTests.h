@@ -1,9 +1,11 @@
 #ifndef SUM_TESTS_H
 #define SUM_TESTS_H
 
+#include "typedefs.h"
+
 #include "IntegerAsVectors.h"
 
-bool sumTest(vector<int> v1, vector<int> v2, vector<int> exp);
+bool sumTest(vl v1, vl v2, vl exp);
 bool sumTests();
 
 #endif // !SUM_TESTS_H
