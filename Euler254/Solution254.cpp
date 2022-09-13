@@ -9,13 +9,16 @@ using namespace std;
 typedef long long ls;
 typedef vector<ls> vl;
 
+// digits
+const vl digits[] = { {0},{1},{2},{3},{4},{5},{6},{7},{8},{9} };
+
 // factorial   0 1 2 3 4  5   6   7    8     9
-ls facts[] = { 1,1,2,6,24,120,720,5040,40320,362880 };
-vl factsv[] = { {1},{1},{2},{6},{24},{120},{720},{5040},{40320},{362880} };
+const ls facts[] = { 1,1,2,6,24,120,720,5040,40320,362880 };
+const vl factsv[] = { {1},{1},{2},{6},{24},{120},{720},{5040},{40320},{362880} };
 
 // Pre-calculated g in direct record
-// g(i)              1   2   3   4     5     6   7     8     9   10    11    12    13      14      15    16      17      18    19
-vl gv[] = { {1},{2},{5},{1,5},{2,5},{3},{1,3},{2,3},{6},{1,6},{2,6},{4,4},{1,4,4},{2,5,6},{3,6},{1,3,6},{2,3,6},{6,7},{1,6,7},
+// g(i)            1   2   3   4     5     6   7     8     9   10    11    12    13      14      15    16      17      18    19
+const vl gv[] = { {1},{2},{5},{1,5},{2,5},{3},{1,3},{2,3},{6},{1,6},{2,6},{4,4},{1,4,4},{2,5,6},{3,6},{1,3,6},{2,3,6},{6,7},{1,6,7},
 //   20                                                                        30
     {2,6,7},{3,4,9},{1,3,4,9},{2,3,4,9},{4,9},{1,4,9},{2,4,9},{9},{1,9},{2,9},{1,2,9},{2,2,9},{1,2,2,9},{3,9},{1,3,9},{2,3,9},{1,2,3,9},
     //                                     40
@@ -501,6 +504,25 @@ ls sumOfDigits(vl v) {
     return s;
 }
 
+vl sumOfDigitsV(vl v) {
+
+    vl s;
+    for (ls i : v)
+    {
+        s = sum(s, digits[i]);
+    }
+    return s;
+}
+
+vl sumOfDigitsV(vl* v) {
+
+    vl s;
+    for (ls i = 0; i < 9; i++) {
+        s = sum(s, multiply(v[i], digits[8 - i]));
+    }
+    return s;
+}
+
 /// <summary>
 /// Sum of factorials of digits of the given number.
 /// f(abc) = a!+b!+c!
@@ -555,18 +577,19 @@ bool compareG(vl* dg1, vl* dg2, ls n) {
     return false; // g1 and g2 are equal, return false
 }
 
-//vl composeG(vl* dg, ls n) {
-//
-//    vl ret;
-//    for (ls i = n - 1; i >= 0; i--) {
-//        while (true)
-//        {
-//
-//        }
-//    }
-//
-//    return ret;
-//}
+vl composeG(vl* decompFact, ls nb) {
+
+    vl ret;
+    for (ls i = 0; i < nb; i++) {
+        vl tmp = decompFact[i];
+        while (!(tmp.size() == 1 && tmp[0] == 0))
+        {
+            ret.push_back(nb - i);
+            tmp = subtr(tmp, { 1 });
+        }
+    }
+    return ret;
+}
 
 // Bruteforce
 void solveBF(ls n) {
@@ -574,7 +597,7 @@ void solveBF(ls n) {
     ls g[500]{};
     ls sfmax = 0;
     ls step = 1;
-    for (ls i = 1; i <= 5000000000000000000; i += step) {
+    for (ls i = 1; i <= 50000000; i += step) {
         vl nv = convertToVector(i, 10);
         ls f = 0;
         for (ls i : nv) {
@@ -602,24 +625,9 @@ void solveBF(ls n) {
         }
     }
     cout << endl;
-
-    //cout << "g values:" << endl;
-    //for (ls i = 0; i <= n; i++) {
-    //    cout << i << " " << g[i] << endl;
-    //}
-    //cout << endl;
-
-    //cout << "sg values:" << endl;
-    //ls s = 0;
-    //for (ls i = 0; i <= n; i++) {
-    //    s += sumOfDigits(convertToVector(g[i], 10));
-    //    cout << i << " " << s << endl;
-    //}
-    //cout << "S(" << n << ") = " << s << endl;
-    // cout << "Done. sfmax = " << sfmax << endl;
 }
 
-void solve(ls n) {
+vl* solve(ls n) {
 
     const vl basis[] = { {0,8,8,2,6,3},{0,2,3,0,4},{0,4,0,5},{0,2,7},{0,2,1},{4,2},{6},{2},{1} };
     const ls nb = 9;
@@ -699,7 +707,7 @@ void solve(ls n) {
         // std::cout << " ; sum of digits = " << smd << endl;
         if (smd != n) {
             cout << endl << "Alarm, wrong sum of digits. Stopped!" << endl;
-            return;
+            return decompFactMin;
         }
 
         // decompose gn
@@ -733,75 +741,49 @@ void solve(ls n) {
         }
     }
 
-    cout << "n = " << n << " f(g(n)) = ";
-    out(fgnMin);
-    cout << endl;
+    //cout << "n = " << n << " f(g(n)) = ";
+    //out(fgnMin);
+    //cout << endl;
+
+    return decompFactMin;
 }
 
 void solve() {
 
-    for (ls n = 56; n <= 100; n++) {
-        solve(n);
+    vl s;
+    for (ls n = 60; n <= 60; n++) {
+
+        vl gn;
+        vl sgn;
+        if (n < 57) {
+            gn = inverse(gv[n - 1]);
+            sgn = sumOfDigitsV(gn);
+
+        }
+        else {
+            vl* dcomp = solve(n);
+            //gn = composeG(solve(n), 9);
+            //sgn = sumOfDigitsV(gn);
+            sgn = sumOfDigitsV(dcomp);
+        }
+
+        s = sum(s, sgn);
+        cout << "n = " << n << endl;
+        //cout << " gn =       ";
+        //out(inverse(gn));
+        //cout << endl;
+        cout << " s(gn) = ";
+        out(inverse(sgn));
+        cout << endl;
+        cout << " summ(s(gn)) = ";
+        out(inverse(s));
+        cout << endl;
     }
-
-    //vl v1{ 3,9,9,9,9,9,8 };
-    //out(v1);
-    //cout << " : sum of digits = " << sumOfDigits(v1) << endl;
-
-    //vl* act1 = decomp(inverse(v1), basis, nb);
-
-    //vl digits1;
-    //for (int i = 0; i < nb; i++) {
-    //    out(inverse(act1[i]));
-    //    cout << "*9!+";
-    //    digits1 = sum(digits1, act1[i]);
-    //}
-    //cout << " Number of digits in g1: ";
-    //out(inverse(digits1));
-    //cout << endl;
-
-    //vl v2{ 3,9,9,9,9,8,9 };
-    //out(v2);
-    //cout << " : sum of digits = " << sumOfDigits(v2) << endl;
-
-    //vl* act2 = decomp(inverse(v2), basis, nb);
-
-    //vl digits2;
-    //for (int i = 0; i < nb; i++) {
-    //    out(inverse(act2[i]));
-    //    cout << " ";
-    //    digits2 = sum(digits2, act2[i]);
-    //}
-    //cout << " Number of digits in g2: ";
-    //out(inverse(digits2));
-    //cout << endl;
-
 }
 
 int main() {
 
     // solveBF(50);
     solve();
-
-    //ls dc = decomp(379999);
-    //dc = decomp(488899);
-
-    //vector<vl> ret = comp(20, 3);
-
-    //cout << "Size: " << ret.size() << endl;
-    //for (vl v : ret) {
-    //    out(v);
-    //}
-
-    //int i = 1;
-    //ls sg = 0;
-    //for (vl g : gv) {
-    //    ls sum = sumOfDigits(g);
-    //    vl fs = f(g);
-    //    sg += sum;
-    //    cout << i << " sg = " << sum << " S = " << sg << endl;
-    //    i++;
-    //}
-
     return 0;
 }
