@@ -533,10 +533,10 @@ bool compareG(vl* dg1, vl* dg2, ls n) {
         digits2 = sum(digits2, dg2[i]);
     }
 
-    if (digits1 < digits2) {
+    if (lessthan(digits1, digits2)) {
         return true;
     }
-    else if (digits1 > digits2) {
+    else if (lessthan(digits2, digits1)) {
         return false;
     }
 
@@ -619,72 +619,130 @@ void solveBF(ls n) {
     // cout << "Done. sfmax = " << sfmax << endl;
 }
 
-void solve() {
+void solve(ls n) {
 
     const vl basis[] = { {0,8,8,2,6,3},{0,2,3,0,4},{0,4,0,5},{0,2,7},{0,2,1},{4,2},{6},{2},{1} };
     const ls nb = 9;
 
-    ls n = 57;
-    ls nd = 57 / 9;
-    ls fd = 57 % 9;
+    vl* gnMin = NULL;
+    vl* gn = NULL;
+    vl fgnMin;
+    vl ndigitsMin;
+
+    ls nd = n / 9;
+    ls fd = n % 9;
     if (fd > 0) {
         nd++;
     }
 
-    // the base fgn has the following form: fd - first digit, then go (nd-1) nines: fd9...9
-    // then we replace one nine (9) with eight (8):
-    // fd9...8...9; 8 is placed at the index i8
-    // So, sum of the digits is n
-    vl* gnMin = NULL;
-    vl* gn = NULL;
-    vl fgn;
-    vl fgnMin;
-    for (ls i8 = 1; i8 < nd; i8++) {
+    // if fd > 0, we test two combinations: 
+    // 1) fd9...9; for 62: 8999999
+    // 2) d1d29...8...9, where d1+d2=fd+1; 
+    // for 62:
+    // 7999998,7999989,7999899,7998999,7989999,7899999.
+    // 16999998,16999989,16999899,16998999,16989999,16899999.
+    //
+    // if fd = 0, we test
+    // 1) 9...9;
+    // 2) 19...8...9;
 
-        fgn.clear();
-        // compose fgn
+    vector<vl> fgnv; // all combinations under consideration
+
+    // The first case:
+    vl fgn;
+    if (fd > 0) {
         fgn.push_back(fd);
-        for (ls i = 1; i < i8; i++) {
-            fgn.push_back(9);
+    }
+    else {
+        fgn.push_back(9);
+    }
+    for (ls i = 1; i < nd; i++) {
+        fgn.push_back(9);
+    }
+    fgnv.push_back(fgn);
+
+    // The second set of combinations:
+    // sum of two first digits should be fd
+    // d1d29...8...9; 8 is placed at the index i8; d1 + d2 = fd
+    // So, sum of the digits is always n
+    if (fd == 0) {
+        nd++;
+    }
+    for (ls d1 = 0; d1 <= fd; d1++) {
+        ls d2 = fd - d1 + 1;
+        for (ls i8 = 1; i8 < nd; i8++) {
+            // clear old stuff and compose new fgn
+            fgn.clear();
+            if (d1 > 0) {
+                fgn.push_back(d1);
+            }
+            if (d2 > 0) {
+                fgn.push_back(d2);
+            }
+            for (ls i = 1; i < i8; i++) {
+                fgn.push_back(9);
+            }
+            fgn.push_back(8);
+            for (ls i = i8 + 1; i < nd; i++) {
+                fgn.push_back(9);
+            }
+            fgnv.push_back(fgn);
         }
-        fgn.push_back(8);
-        for (ls i = i8 + 1; i < nd; i++) {
-            fgn.push_back(9);
+    }
+
+    // find minimum
+    for (ls i = 0; i < fgnv.size(); i++) {
+
+        fgn = fgnv[i];
+        // out(fgn);
+        ls smd = sumOfDigits(fgn);
+        // std::cout << " ; sum of digits = " << smd << endl;
+        if (smd != n) {
+            cout << endl << "Alarm, wrong sum of digits. Stopped!" << endl;
+            return;
         }
-        out(fgn);
-        cout << " : sum of digits = " << sumOfDigits(fgn) << endl;
 
         // decompose gn
-        gnMin = gn;
         gn = decomp(inverse(fgn), basis, nb);
         vl ndigits;
         for (ls i = 0; i < nb; i++) {
-            out(inverse(gn[i]));
+            // out(inverse(gn[i]));
             if (i == nb - 1) {
-                cout << "*" << nb - i << "!";
+                // cout << "*" << nb - i << "!";
             }
             else {
-                cout << "*" << nb - i << "! + ";
+                // cout << "*" << nb - i << "! + ";
             }
             ndigits = sum(ndigits, gn[i]);
         }
-        cout << " Number of digits in g1: ";
-        out(inverse(ndigits));
-        cout << endl;
+        // cout << " Number of digits in g1: ";
+        // out(inverse(ndigits));
+        // cout << endl;
 
-        if (gnMin != NULL) {
-            bool g1IsLess = compareG(gn, gnMin, nb);
-            if (g1IsLess) {
+        if (i == 0) {
+            gnMin = gn;
+            fgnMin = fgn;
+            ndigitsMin = ndigits;
+        }
+        else {
+            if (compareG(gn, gnMin, nb)) {
                 gnMin = gn;
                 fgnMin = fgn;
-                cout << "fgn is less!" << endl;
-            }
-            else {
-                cout << "fgn is greater!" << endl;
+                ndigitsMin = ndigits;
             }
         }
     }
-    cout << "Done!" << endl;
+
+    cout << "n = " << n << " f(g(n)) = ";
+    out(fgnMin);
+    cout << endl;
+}
+
+void solve() {
+
+    for (ls n = 56; n <= 100; n++) {
+        solve(n);
+    }
 
     //vl v1{ 3,9,9,9,9,9,8 };
     //out(v1);
