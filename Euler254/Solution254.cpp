@@ -11,8 +11,9 @@ typedef vector<ls> vl;
 
 // digits
 const vl digits[] = { {0},{1},{2},{3},{4},{5},{6},{7},{8},{9} };
+const ls ndigits = 9;
 
-// factorial   0 1 2 3 4  5   6   7    8     9
+// factorial         0 1 2 3 4  5   6   7    8     9
 const ls facts[] = { 1,1,2,6,24,120,720,5040,40320,362880 };
 const vl factsv[] = { {1},{1},{2},{6},{24},{120},{720},{5040},{40320},{362880} };
 
@@ -461,7 +462,7 @@ ls decomp(ls v) {
     ls sum = 0;
 
     ls vv = v;
-    for (ls i = 9; i >= 1; i--) {
+    for (ls i = ndigits; i >= 1; i--) {
         ls res = vv / facts[i];
         if (res > 0)
             ret.push_back(res);
@@ -475,23 +476,20 @@ ls decomp(ls v) {
 /// <summary>
 /// Decomposition of a big integer in a basis.
 /// </summary>
-/// <param name="v">The integer.</param>
-/// <param name="basis">The basis as an array of vectors.</param>
-/// <param name="n">Number of basic numbers.</param>
+/// <param name="ret">Deomposition array (output).</param>
+/// <param name="v">The integer to decompose (input).</param>
+/// <param name="basis">The basis as an array of vectors (input).</param>
+/// <param name="n">Number of basic numbers (input).</param>
 /// <returns></returns>
-vl* decomp(vl v, const vl basis[], ls n)
+void decomp(vl* ret, vl v, const vl basis[], ls n)
 {
-    vl* ret = new vl[n];
-    vl rem = v;
-
     // Assume the terms are in descending order: {99, 71, 33, 17...}
+    vl rem = v;
     for (ls i = 0; i < n; i++) {
         pair<vl, vl> res = divide(rem, basis[i]);
         ret[i] = res.first;
         rem = res.second;
     }
-
-    return ret;
 }
 
 ls sumOfDigits(vl v) {
@@ -517,8 +515,8 @@ vl sumOfDigitsV(vl v) {
 vl sumOfDigitsV(vl* v) {
 
     vl s;
-    for (ls i = 0; i < 9; i++) {
-        s = sum(s, multiply(v[i], digits[8 - i]));
+    for (ls i = 0; i < ndigits; i++) {
+        s = sum(s, multiply(v[i], (ndigits - i)));
     }
     return s;
 }
@@ -546,7 +544,7 @@ vl f(vl v) {
 /// <param name="dg2">g2</param>
 /// <param name="n"></param>
 /// <returns>True if g1 is less than g2</returns>
-bool compareG(vl* dg1, vl* dg2, ls n) {
+bool compareG(const vl* dg1, const  vl* dg2, ls n) {
 
     vl digits1; // number of digits in g1
     vl digits2; // number of digits in g2
@@ -577,7 +575,7 @@ bool compareG(vl* dg1, vl* dg2, ls n) {
     return false; // g1 and g2 are equal, return false
 }
 
-vl composeG(vl* decompFact, ls nb) {
+vl composeG(const vl* decompFact, ls nb) {
 
     vl ret;
     for (ls i = 0; i < nb; i++) {
@@ -627,13 +625,11 @@ void solveBF(ls n) {
     cout << endl;
 }
 
-vl* solve(ls n) {
+void solve(vl* decompFactMin, ls n) {
 
     const vl basis[] = { {0,8,8,2,6,3},{0,2,3,0,4},{0,4,0,5},{0,2,7},{0,2,1},{4,2},{6},{2},{1} };
-    const ls nb = 9;
 
-    vl* decompFactMin = NULL;
-    vl* decompFact = NULL;
+    vl decompFact[ndigits];
     vl fgnMin;
     vl ndigitsMin;
 
@@ -707,51 +703,51 @@ vl* solve(ls n) {
         // std::cout << " ; sum of digits = " << smd << endl;
         if (smd != n) {
             cout << endl << "Alarm, wrong sum of digits. Stopped!" << endl;
-            return decompFactMin;
+            return;
         }
 
-        // decompose gn
-        decompFact = decomp(inverse(fgn), basis, nb);
-        vl ndigits;
-        for (ls i = 0; i < nb; i++) {
-            // out(inverse(gn[i]));
-            if (i == nb - 1) {
-                // cout << "*" << nb - i << "!";
-            }
-            else {
-                // cout << "*" << nb - i << "! + ";
-            }
-            ndigits = sum(ndigits, decompFact[i]);
-        }
+        // decompose fgn in the basis of elementary factorials 1-9
+        decomp(decompFact, inverse(fgn), basis, ndigits);
+
+        //vl ndigits;
+        //for (ls i = 0; i < nb; i++) {
+        //    out(inverse(decompFact[i]));
+        //    if (i == nb - 1) {
+        //        cout << "*" << nb - i << "!";
+        //    }
+        //    else {
+        //        cout << "*" << nb - i << "! + ";
+        //    }
+        //    ndigits = sum(ndigits, decompFact[i]);
+        //}
         // cout << " Number of digits in g1: ";
         // out(inverse(ndigits));
         // cout << endl;
 
         if (i == 0) {
-            decompFactMin = decompFact;
             fgnMin = fgn;
-            ndigitsMin = ndigits;
+            //ndigitsMin = ndigits;
         }
         else {
-            if (compareG(decompFact, decompFactMin, nb)) {
-                decompFactMin = decompFact;
+            if (compareG(decompFact, decompFactMin, ndigits)) {
                 fgnMin = fgn;
-                ndigitsMin = ndigits;
+                //ndigitsMin = ndigits;
             }
         }
     }
 
+    decomp(decompFactMin, inverse(fgnMin), basis, ndigits);
+
     //cout << "n = " << n << " f(g(n)) = ";
     //out(fgnMin);
     //cout << endl;
-
-    return decompFactMin;
 }
 
 void solve() {
 
+    vl dcomp[9];
     vl s;
-    for (ls n = 60; n <= 60; n++) {
+    for (ls n = 57; n <= 57; n++) {
 
         vl gn;
         vl sgn;
@@ -761,7 +757,7 @@ void solve() {
 
         }
         else {
-            vl* dcomp = solve(n);
+            solve(dcomp, n);
             //gn = composeG(solve(n), 9);
             //sgn = sumOfDigitsV(gn);
             sgn = sumOfDigitsV(dcomp);
