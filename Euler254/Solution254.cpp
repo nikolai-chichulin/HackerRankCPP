@@ -624,8 +624,8 @@ void solve(ls n) {
     const vl basis[] = { {0,8,8,2,6,3},{0,2,3,0,4},{0,4,0,5},{0,2,7},{0,2,1},{4,2},{6},{2},{1} };
     const ls nb = 9;
 
-    vl* gnMin = NULL;
-    vl* gn = NULL;
+    vl* decompFactMin = NULL;
+    vl* decompFact = NULL;
     vl fgnMin;
     vl ndigitsMin;
 
@@ -703,7 +703,7 @@ void solve(ls n) {
         }
 
         // decompose gn
-        gn = decomp(inverse(fgn), basis, nb);
+        decompFact = decomp(inverse(fgn), basis, nb);
         vl ndigits;
         for (ls i = 0; i < nb; i++) {
             // out(inverse(gn[i]));
@@ -713,20 +713,20 @@ void solve(ls n) {
             else {
                 // cout << "*" << nb - i << "! + ";
             }
-            ndigits = sum(ndigits, gn[i]);
+            ndigits = sum(ndigits, decompFact[i]);
         }
         // cout << " Number of digits in g1: ";
         // out(inverse(ndigits));
         // cout << endl;
 
         if (i == 0) {
-            gnMin = gn;
+            decompFactMin = decompFact;
             fgnMin = fgn;
             ndigitsMin = ndigits;
         }
         else {
-            if (compareG(gn, gnMin, nb)) {
-                gnMin = gn;
+            if (compareG(decompFact, decompFactMin, nb)) {
+                decompFactMin = decompFact;
                 fgnMin = fgn;
                 ndigitsMin = ndigits;
             }
