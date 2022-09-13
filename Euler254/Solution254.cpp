@@ -3,11 +3,14 @@
 #include <vector>
 #include <iostream>
 #include <algorithm>
+#include <fstream>
 
 using namespace std;
 
 typedef long long ls;
 typedef vector<ls> vl;
+
+ofstream outf;
 
 // digits
 const vl digits[] = { {0},{1},{2},{3},{4},{5},{6},{7},{8},{9} };
@@ -50,9 +53,20 @@ vl inverse(vl v) {
 /// <param name="v">The vector.</param>
 void out(vl v) {
     for (ls v : v) {
-        cout << v;
+        outf << v;
     }
-    // cout << " " << endl;
+    // outf << " " << endl;
+}
+
+/// <summary>
+/// Prints a vector to output console.
+/// </summary>
+/// <param name="v">The vector.</param>
+void out(vl v, char c) {
+    for (ls v : v) {
+        outf << v << c;
+    }
+    // outf << " " << endl;
 }
 
 /// <summary>
@@ -607,7 +621,7 @@ void solveBF(ls n) {
             if (sf > sfmax) {
                 sfmax = sf;
             }
-            cout << "n = " << i << " f(n) = " << f << " sf(n) = " << sf << " : g(" << sf << ") = " << i << endl;
+            outf << "n = " << i << " f(n) = " << f << " sf(n) = " << sf << " : g(" << sf << ") = " << i << endl;
             if (sf == 32) {
                 step = 10;
             }
@@ -619,13 +633,13 @@ void solveBF(ls n) {
             }
         }
         else {
-            // cout << "n = " << n << " f(n) = " << f << " sf(n) = " << sf << " repeat" << endl;
+            // outf << "n = " << n << " f(n) = " << f << " sf(n) = " << sf << " repeat" << endl;
         }
     }
-    cout << endl;
+    outf << endl;
 }
 
-void solve(vl* decompFactMin, ls n) {
+void findMinDecomp(vl* decompFactMin, ls n) {
 
     const vl basis[] = { {0,8,8,2,6,3},{0,2,3,0,4},{0,4,0,5},{0,2,7},{0,2,1},{4,2},{6},{2},{1} };
 
@@ -701,9 +715,9 @@ void solve(vl* decompFactMin, ls n) {
         fgn = fgnv[i];
         // out(fgn);
         ls smd = sumOfDigits(fgn);
-        // std::cout << " ; sum of digits = " << smd << endl;
+        // std::outf << " ; sum of digits = " << smd << endl;
         if (smd != n) {
-            cout << endl << "Alarm, wrong sum of digits. Stopped!" << endl;
+            outf << endl << "Alarm, wrong sum of digits. Stopped!" << endl;
             return;
         }
 
@@ -714,16 +728,16 @@ void solve(vl* decompFactMin, ls n) {
         //for (ls i = 0; i < nb; i++) {
         //    out(inverse(decompFact[i]));
         //    if (i == nb - 1) {
-        //        cout << "*" << nb - i << "!";
+        //        outf << "*" << nb - i << "!";
         //    }
         //    else {
-        //        cout << "*" << nb - i << "! + ";
+        //        outf << "*" << nb - i << "! + ";
         //    }
         //    ndigits = sum(ndigits, decompFact[i]);
         //}
-        // cout << " Number of digits in g1: ";
+        // outf << " Number of digits in g1: ";
         // out(inverse(ndigits));
-        // cout << endl;
+        // outf << endl;
 
         if (i == 0) {
             fgnMin = fgn;
@@ -739,16 +753,16 @@ void solve(vl* decompFactMin, ls n) {
 
     decomp(decompFactMin, inverse(fgnMin), basis, maxdigit);
 
-    //cout << "n = " << n << " f(g(n)) = ";
-    //out(fgnMin);
-    //cout << endl;
+    outf << "n = " << n << " f(g(n)) = ";
+    out(fgnMin);
+    outf << endl;
 }
 
 void solve() {
 
     vl dcomp[maxdigit];
     vl s;
-    for (ls n = 1; n <= 100; n++) {
+    for (ls n = 1; n <= 640; n += 1) {
 
         vl gn;
         vl sgn;
@@ -757,29 +771,39 @@ void solve() {
             sgn = sumOfDigitsV(gn);
         }
         else {
-            solve(dcomp, n);
-            //gn = composeG(solve(n), ndigits);
+            findMinDecomp(dcomp, n);
+            //gn = composeG(dcomp, maxdigits);
             //sgn = sumOfDigitsV(gn);
             sgn = sumOfDigitsV(dcomp);
         }
 
         s = sum(s, sgn);
-        cout << "n = " << n << endl;
-        //cout << " gn =       ";
+        outf << "n = " << n << endl;
+        //outf << " gn =       ";
         //out(inverse(gn));
-        //cout << endl;
-        cout << " s(gn) = ";
+        //outf << endl;
+        outf << " s(gn) = ";
         out(inverse(sgn));
-        cout << endl;
-        cout << " summ(s(gn)) = ";
+        outf << endl;
+        outf << " summ(s(gn)) = ";
         out(inverse(s));
-        cout << endl;
+        outf << endl;
+        outf << " decomp((gn)) : ";
+        for (ls i = 0; i < 9; i++) {
+            vl d = dcomp[i];
+            outf << maxdigit - i << ':';
+            out(inverse(d));
+            outf << ' ';
+        }
+        outf << endl;
     }
 }
 
 int main() {
 
+    outf.open("output.txt");
     // solveBF(50);
     solve();
+    outf.close();
     return 0;
 }
