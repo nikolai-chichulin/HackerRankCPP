@@ -11,7 +11,7 @@ typedef vector<ls> vl;
 
 // digits
 const vl digits[] = { {0},{1},{2},{3},{4},{5},{6},{7},{8},{9} };
-const ls ndigits = 9;
+const ls maxdigit = 9;
 
 // factorial         0 1 2 3 4  5   6   7    8     9
 const ls facts[] = { 1,1,2,6,24,120,720,5040,40320,362880 };
@@ -462,7 +462,7 @@ ls decomp(ls v) {
     ls sum = 0;
 
     ls vv = v;
-    for (ls i = ndigits; i >= 1; i--) {
+    for (ls i = maxdigit; i >= 1; i--) {
         ls res = vv / facts[i];
         if (res > 0)
             ret.push_back(res);
@@ -515,8 +515,8 @@ vl sumOfDigitsV(vl v) {
 vl sumOfDigitsV(vl* v) {
 
     vl s;
-    for (ls i = 0; i < ndigits; i++) {
-        s = sum(s, multiply(v[i], (ndigits - i)));
+    for (ls i = 0; i < maxdigit; i++) {
+        s = sum(s, multiply(v[i], (maxdigit - i)));
     }
     return s;
 }
@@ -629,12 +629,12 @@ void solve(vl* decompFactMin, ls n) {
 
     const vl basis[] = { {0,8,8,2,6,3},{0,2,3,0,4},{0,4,0,5},{0,2,7},{0,2,1},{4,2},{6},{2},{1} };
 
-    vl decompFact[ndigits];
+    vl decompFact[maxdigit];
     vl fgnMin;
     vl ndigitsMin;
 
-    ls nd = n / 9;
-    ls fd = n % 9;
+    ls nd = n / maxdigit;
+    ls fd = n % maxdigit;
     if (fd > 0) {
         nd++;
     }
@@ -651,6 +651,7 @@ void solve(vl* decompFactMin, ls n) {
     // 2) 19...8...9;
 
     vector<vl> fgnv; // all combinations under consideration
+    const ls maxdigit = 9;
 
     // The first case:
     vl fgn;
@@ -658,10 +659,10 @@ void solve(vl* decompFactMin, ls n) {
         fgn.push_back(fd);
     }
     else {
-        fgn.push_back(9);
+        fgn.push_back(maxdigit);
     }
     for (ls i = 1; i < nd; i++) {
-        fgn.push_back(9);
+        fgn.push_back(maxdigit);
     }
     fgnv.push_back(fgn);
 
@@ -684,11 +685,11 @@ void solve(vl* decompFactMin, ls n) {
                 fgn.push_back(d2);
             }
             for (ls i = 1; i < i8; i++) {
-                fgn.push_back(9);
+                fgn.push_back(maxdigit);
             }
             fgn.push_back(8);
             for (ls i = i8 + 1; i < nd; i++) {
-                fgn.push_back(9);
+                fgn.push_back(maxdigit);
             }
             fgnv.push_back(fgn);
         }
@@ -707,7 +708,7 @@ void solve(vl* decompFactMin, ls n) {
         }
 
         // decompose fgn in the basis of elementary factorials 1-9
-        decomp(decompFact, inverse(fgn), basis, ndigits);
+        decomp(decompFact, inverse(fgn), basis, maxdigit);
 
         //vl ndigits;
         //for (ls i = 0; i < nb; i++) {
@@ -729,14 +730,14 @@ void solve(vl* decompFactMin, ls n) {
             //ndigitsMin = ndigits;
         }
         else {
-            if (compareG(decompFact, decompFactMin, ndigits)) {
+            if (compareG(decompFact, decompFactMin, maxdigit)) {
                 fgnMin = fgn;
                 //ndigitsMin = ndigits;
             }
         }
     }
 
-    decomp(decompFactMin, inverse(fgnMin), basis, ndigits);
+    decomp(decompFactMin, inverse(fgnMin), basis, maxdigit);
 
     //cout << "n = " << n << " f(g(n)) = ";
     //out(fgnMin);
@@ -745,20 +746,19 @@ void solve(vl* decompFactMin, ls n) {
 
 void solve() {
 
-    vl dcomp[9];
+    vl dcomp[maxdigit];
     vl s;
-    for (ls n = 57; n <= 57; n++) {
+    for (ls n = 1; n <= 100; n++) {
 
         vl gn;
         vl sgn;
         if (n < 57) {
-            gn = inverse(gv[n - 1]);
+            gn = inverse(gv[n - 1]); // pre-calculated values
             sgn = sumOfDigitsV(gn);
-
         }
         else {
             solve(dcomp, n);
-            //gn = composeG(solve(n), 9);
+            //gn = composeG(solve(n), ndigits);
             //sgn = sumOfDigitsV(gn);
             sgn = sumOfDigitsV(dcomp);
         }
