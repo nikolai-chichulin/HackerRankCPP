@@ -11,20 +11,25 @@
 
 using namespace std;
 
+void commontests() {
+
+    cout << "Multiplication with integer: " << (multTestsI() ? "passed" : "failed") << endl;
+    cout << "Multiplication with vector:  " << (multTestsV() ? "passed" : "failed") << endl;
+    cout << "Summation:                   " << (sumTests() ? "passed" : "failed") << endl;
+    cout << "Raising to a power:          " << (powerTests() ? "passed" : "failed") << endl;
+    cout << "Raising to a power integer:  " << (powerTestsI() ? "passed" : "failed") << endl;
+    cout << "Subtration:                  " << (subtrTests() ? "passed" : "failed") << endl;
+    cout << "Division:                    " << (divTests() ? "passed" : "failed") << endl;
+    cout << "Compose:                     " << (compTests() ? "passed" : "failed") << endl;
+    cout << "Decompose:                   " << (decompTests() ? "passed" : "failed") << endl;
+    cout << "Big Integers:                " << (biTests() ? "passed" : "failed") << endl;
+}
+
 int main() {
 
-    //cout << (multTestsI() ? "Passed" : "Failed") << endl;
-    //cout << (multTestsV() ? "Passed" : "Failed") << endl;
-    //cout << (sumTests() ? "Passed" : "Failed") << endl;
-    //cout << (powerTests() ? "Passed" : "Failed") << endl;
-    //cout << (powerTestsI() ? "Passed" : "Failed") << endl;
-    //cout << (subtrTests() ? "Passed" : "Failed") << endl;
-    //cout << (divTests() ? "Passed" : "Failed") << endl;
-    //cout << (compTests() ? "Passed" : "Failed") << endl;
-    //cout << (decompTests() ? "Passed" : "Failed") << endl;
-    //cout << (biTests() ? "Passed" : "Failed") << endl;
+    commontests();
 
-    bi i1 = bi::factorial(25);
+    bi i1 = bi::factorial(1000);
     cout << i1 << endl;
     //pair<bi, bi>res = i1 / i2;
     //cout << i1 << " / " << i2 << " = " << res.first << " : " << res.second << endl;
