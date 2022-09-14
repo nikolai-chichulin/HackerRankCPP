@@ -1,3 +1,4 @@
+#include <random>
 #include "typedefs.h"
 
 #include "IntegerAsVectors.h"
@@ -54,6 +55,13 @@ bool subtrTests()
     v1 = { 1,1,1,1 };
     v2 = { 9,9,9 };
     exp = { 2,1,1 };
+    if (!subtrTest(v1, v2, exp)) {
+        return false;
+    }
+
+    v1 = { 0,0,0,0,1 };
+    v2 = { 0,0,1 };
+    exp = { 0,0,9,9 };
     if (!subtrTest(v1, v2, exp)) {
         return false;
     }

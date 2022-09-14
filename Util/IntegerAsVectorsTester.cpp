@@ -5,6 +5,7 @@
 #include "PowerTests.h"
 #include "DivTests.h"
 #include "CompDecompTests.h"
+#include "BigIntegerTests.h"
 
 #include "BigInteger.h"
 
@@ -21,15 +22,14 @@ int main() {
     //cout << (divTests() ? "Passed" : "Failed") << endl;
     //cout << (compTests() ? "Passed" : "Failed") << endl;
     //cout << (decompTests() ? "Passed" : "Failed") << endl;
+    cout << (biTests() ? "Passed" : "Failed") << endl;
 
-    bi i1(-123456789777777L); // long long
-    bi i2(-123); // int
-    bi i3("-12345"); // string
-    cout << i1 << endl;
-    cout << i2 << endl;
-    cout << i3 << endl;
-
-    cout << i1[0] << endl;
+    //bi i1;
+    //bi i2(100);
+    //cout << i1 << " + " << i2 << " = " << i1 + i2 << endl;
+    //cout << i1 << " - " << i2 << " = " << i1 - i2 << endl;
+    //cout << i2 << " + " << i1 << " = " << i2 + i1 << endl;
+    //cout << i2 << " - " << i1 << " = " << i2 - i1 << endl;
 
     return 0;
 }
