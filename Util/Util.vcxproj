@@ -130,6 +130,7 @@
     <ClCompile Include="CompDecompTests.cpp" />
     <ClCompile Include="DivTests.cpp" />
     <ClCompile Include="FactTests.cpp" />
+    <ClCompile Include="BigInteger.cpp" />
     <ClCompile Include="IntegerAsVectors.cpp" />
     <ClCompile Include="IntegerAsVectorsTester.cpp" />
     <ClCompile Include="MultTests.cpp" />
@@ -142,6 +143,7 @@
     <ClInclude Include="CompDecompTests.h" />
     <ClInclude Include="DivTests.h" />
     <ClInclude Include="FactTests.h" />
+    <ClInclude Include="BigInteger.h" />
     <ClInclude Include="IntegerAsVectors.h" />
     <ClInclude Include="IntegerAsVectorsTester.h" />
     <ClInclude Include="MultTests.h" />
