@@ -18,6 +18,9 @@ public:
 
     ~bi();
 
+    static bi zero();
+    static bi unity();
+
     bi operator+(const bi& rhs) const;
     bi operator-(const bi& rhs) const;
     bi operator*(const bi& rhs) const;
@@ -36,7 +39,10 @@ public:
 
     bool isNegative() const;
     bool isZero() const;
+    bool isUnity() const;
     size_t size() const;
+
+    static bi factorial(int);
 
 private:
 

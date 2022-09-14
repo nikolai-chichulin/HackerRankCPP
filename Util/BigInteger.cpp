@@ -48,6 +48,16 @@ bi::~bi()
 {
 }
 
+bi bi::zero()
+{
+    return bi();
+}
+
+bi bi::unity()
+{
+    return bi(1);
+}
+
 bi bi::operator+(const bi& rhs) const
 {
     bi ret;
@@ -342,9 +352,23 @@ bool bi::isZero() const
     return (v.size() == 1 && v[0] == 0) || v.size() == 0;
 }
 
+bool bi::isUnity() const
+{
+    return (v.size() == 1 && v[0] == 1);
+}
+
 size_t bi::size() const
 {
     return v.size();
+}
+
+bi bi::factorial(int n)
+{
+    bi ret = bi::unity();
+    if (n == 1) {
+        return ret;
+    }
+    return bi(n) * bi::factorial(n - 1);
 }
 
 bi::bi(vector<int>& v)
