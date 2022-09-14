@@ -41,6 +41,8 @@ public:
     bool isZero() const;
     bool isUnity() const;
     size_t size() const;
+    bi s() const; // sum of digits
+    bi f() const; // sum of the digits factorials
 
     static bi factorial(int);
 

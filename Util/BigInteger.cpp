@@ -362,6 +362,20 @@ size_t bi::size() const
     return v.size();
 }
 
+bi bi::s() const
+{
+    bi ret;
+    for (int i : v) {
+        ret = ret + bi(i);
+    }
+    return ret;
+}
+
+bi bi::f() const
+{
+    return bi();
+}
+
 bi bi::factorial(int n)
 {
     bi ret = bi::unity();
