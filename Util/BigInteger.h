@@ -18,16 +18,16 @@ public:
 
     ~bi();
 
-    bi operator+(const bi& rhs);
-    bi operator-(const bi& rhs);
+    bi operator+(const bi& rhs) const;
+    bi operator-(const bi& rhs) const;
     bi operator*(const bi& rhs) const;
 
-    bool operator==(const bi& rhs);
-    bool operator!=(const bi& rhs);
-    bool operator<(const bi& rhs);
-    bool operator<=(const bi& rhs);
-    bool operator>(const bi& rhs);
-    bool operator>=(const bi& rhs);
+    bool operator==(const bi& rhs) const;
+    bool operator!=(const bi& rhs) const;
+    bool operator<(const bi& rhs) const;
+    bool operator<=(const bi& rhs) const;
+    bool operator>(const bi& rhs) const;
+    bool operator>=(const bi& rhs) const;
 
     bi operator+=(const bi& rhs);
 

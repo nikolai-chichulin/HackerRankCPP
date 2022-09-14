@@ -46,7 +46,7 @@ bi::~bi()
 {
 }
 
-bi bi::operator+(const bi& rhs)
+bi bi::operator+(const bi& rhs) const
 {
     bi ret;
 
@@ -71,7 +71,7 @@ bi bi::operator+(const bi& rhs)
     return ret;
 }
 
-bi bi::operator-(const bi& rhs)
+bi bi::operator-(const bi& rhs) const
 {
     bi ret;
 
@@ -136,7 +136,7 @@ bi bi::operator*(const bi& rhs) const
     return ret;
 }
 
-bool bi::operator==(const bi& rhs)
+bool bi::operator==(const bi& rhs) const
 {
     if (v.size() != rhs.v.size()) {
         return false;
@@ -150,7 +150,7 @@ bool bi::operator==(const bi& rhs)
     return true;
 }
 
-bool bi::operator!=(const bi& rhs)
+bool bi::operator!=(const bi& rhs) const
 {
     if (v.size() != rhs.v.size()) {
         return true;
@@ -164,7 +164,7 @@ bool bi::operator!=(const bi& rhs)
     return false;
 }
 
-bool bi::operator<(const bi& rhs)
+bool bi::operator<(const bi& rhs) const
 {
     if (v.size() < rhs.size()) {
         return true;
@@ -183,17 +183,17 @@ bool bi::operator<(const bi& rhs)
     return false;
 }
 
-bool bi::operator<=(const bi& rhs)
+bool bi::operator<=(const bi& rhs) const
 {
     return (*this < rhs) || (*this == rhs);
 }
 
-bool bi::operator>(const bi& rhs)
+bool bi::operator>(const bi& rhs) const
 {
     return !(*this < rhs) && !(*this == rhs);
 }
 
-bool bi::operator>=(const bi& rhs)
+bool bi::operator>=(const bi& rhs) const
 {
     return !(*this < rhs);
 }
