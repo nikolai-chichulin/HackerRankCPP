@@ -29,9 +29,9 @@ int main() {
 
     // commontests();
 
-    bi i1 = bi::factorial(1000);
+    bi i1 = bi::factorial(10);
     bi i2 = i1.s();
-    bi i3 = i2.s();
+    bi i3 = i1.f();
     cout << i1 << endl;
     cout << i2 << endl;
     cout << i3 << endl;

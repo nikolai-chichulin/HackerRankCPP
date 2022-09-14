@@ -373,13 +373,17 @@ bi bi::s() const
 
 bi bi::f() const
 {
-    return bi();
+    bi ret;
+    for (int i : v) {
+        ret = ret + bi::factorial(i);
+    }
+    return ret;
 }
 
 bi bi::factorial(int n)
 {
     bi ret = bi::unity();
-    if (n == 1) {
+    if (n == 0 || n == 1) {
         return ret;
     }
     return bi(n) * bi::factorial(n - 1);
