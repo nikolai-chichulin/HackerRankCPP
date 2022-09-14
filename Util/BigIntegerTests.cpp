@@ -43,5 +43,29 @@ bool biTests()
         }
     }
 
+    bi act = bi::factorial(0);
+    bi exp(1);
+    if (act != exp) {
+        return false;
+    }
+
+    act = bi::factorial(1);
+    exp = bi(1);
+    if (act != exp) {
+        return false;
+    }
+
+    act = bi::factorial(10);
+    exp = bi(3628800);
+    if (act != exp) {
+        return false;
+    }
+
+    act = bi(123456789).s();
+    exp = bi(45);
+    if (act != exp) {
+        return false;
+    }
+
     return true;
 }

@@ -27,14 +27,14 @@ void commontests() {
 
 int main() {
 
-    // commontests();
+    commontests();
 
-    bi i1 = bi::factorial(10);
-    bi i2 = i1.s();
-    bi i3 = i1.f();
-    cout << i1 << endl;
-    cout << i2 << endl;
-    cout << i3 << endl;
+    //bi i1 = bi::factorial(10);
+    //bi i2 = i1.s();
+    //bi i3 = i1.f();
+    //cout << i1 << endl;
+    //cout << i2 << endl;
+    //cout << i3 << endl;
 
     //pair<bi, bi>res = i1 / i2;
     //cout << i1 << " / " << i2 << " = " << res.first << " : " << res.second << endl;
