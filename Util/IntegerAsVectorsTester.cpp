@@ -22,12 +22,14 @@ int main() {
     //cout << (compTests() ? "Passed" : "Failed") << endl;
     //cout << (decompTests() ? "Passed" : "Failed") << endl;
 
-    long long i = 123456789777777;
-    bi i1(i);
+    bi i1(-123456789777777L); // long long
+    bi i2(-123); // int
+    bi i3("-12345"); // string
     cout << i1 << endl;
-    int j = 12345;
-    bi i2(j);
     cout << i2 << endl;
+    cout << i3 << endl;
+
+    cout << i1[0] << endl;
 
     return 0;
 }

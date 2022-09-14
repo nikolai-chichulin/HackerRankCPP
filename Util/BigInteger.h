@@ -25,8 +25,11 @@ public:
 
     bi operator+=(const bi& rhs);
 
-    vector<int> digits() const;
+    int operator[](size_t i) const;
+
     bool isNegative() const;
+    bool isZero() const;
+    long long size() const;
 
 private:
 
