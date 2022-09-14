@@ -45,6 +45,13 @@ bool divTests()
         return false;
     }
 
+    v1 = { 0,3,0,6 };
+    v2 = { 2 };
+    exp = pair<vl, vl>({ 5,1,0,3 }, { 0 });
+    if (!divTest(v1, v2, exp)) {
+        return false;
+    }
+
     v1 = { 9,8,2,6,4 };
     v2 = { 4,5,6 };
     exp = pair<vl, vl>({ 0,7 }, { 9,0,5 });

@@ -287,7 +287,7 @@ pair<vl, vl> divide(vl v1, vl v2) {
         minuend.insert(minuend.begin(), *(--first));
 
         // Erase the leading zeros
-        while (minuend.size() > 1 && minuend[minuend.size() - 1] == 0) {
+        while (minuend.size() > 0 && minuend[minuend.size() - 1] == 0) {
             minuend.erase(minuend.end() - 1);
         }
 
@@ -305,16 +305,21 @@ pair<vl, vl> divide(vl v1, vl v2) {
             }
         }
 
+        // Erase the leading zeros
+        while (minuend.size() > 0 && minuend[minuend.size() - 1] == 0) {
+            minuend.erase(minuend.end() - 1);
+        }
+
         if (done) {
             break;
         }
 
         // Find the next digit
-        do {
+        while (lessthan(subtrahend, minuend) || equalto(subtrahend, minuend)) {
             m++;
             subtrahendPrev = subtrahend;
             subtrahend = sum(v2, subtrahend);
-        } while (lessthan(subtrahend, minuend) || equalto(subtrahend, minuend));
+        }
         ret.first.insert(ret.first.begin(), --m);
         minuend = subtr(minuend, subtrahendPrev);
         subtrahend = v2;

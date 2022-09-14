@@ -21,6 +21,7 @@ public:
     bi operator+(const bi& rhs) const;
     bi operator-(const bi& rhs) const;
     bi operator*(const bi& rhs) const;
+    pair<bi, bi> operator/(const bi& rhs);
 
     bool operator==(const bi& rhs) const;
     bool operator!=(const bi& rhs) const;
@@ -42,8 +43,16 @@ private:
     vector<int> v;
     bool negative = false;
 
+    bi(vector<int>& v);
+
     static bi sum(const bi& a, const bi& b); // summation of two positive bi
     static bi subtr(const bi& a, const bi& b); // subtraction of two positive bi, the minued must be greater
+
+    // Vector utilities
+    static bool lessthan(vector<int> v1, vector<int> v2);
+    static bool equalto(vector<int> v1, vector<int> v2);
+    static vector<int> sum(vector<int> v1, vector<int> v2);
+    static vector<int> subtr(vector<int> v1, vector<int> v2);
 
 };
 
