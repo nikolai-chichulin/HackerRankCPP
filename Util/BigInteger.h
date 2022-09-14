@@ -22,6 +22,10 @@ public:
 
     bool operator==(const bi& rhs);
     bool operator!=(const bi& rhs);
+    bool operator<(const bi& rhs);
+    bool operator<=(const bi& rhs);
+    bool operator>(const bi& rhs);
+    bool operator>=(const bi& rhs);
 
     bi operator+=(const bi& rhs);
 
@@ -29,7 +33,7 @@ public:
 
     bool isNegative() const;
     bool isZero() const;
-    long long size() const;
+    size_t size() const;
 
 private:
 

@@ -146,6 +146,40 @@ bool bi::operator!=(const bi& rhs)
     return false;
 }
 
+bool bi::operator<(const bi& rhs)
+{
+    if (v.size() < rhs.size()) {
+        return true;
+    }
+    if (v.size() > rhs.size()) {
+        return false;
+    }
+    for (int i = (int)v.size() - 1; i >= 0; i--) {
+        if (v[i] < rhs.v[i]) {
+            return true;
+        }
+        else if (v[i] > rhs.v[i]) {
+            return false;
+        }
+    }
+    return false;
+}
+
+bool bi::operator<=(const bi& rhs)
+{
+    return (*this < rhs) || (*this == rhs);
+}
+
+bool bi::operator>(const bi& rhs)
+{
+    return !(*this < rhs) && !(*this == rhs);
+}
+
+bool bi::operator>=(const bi& rhs)
+{
+    return !(*this < rhs);
+}
+
 bi bi::operator+=(const bi& rhs)
 {
     bi ret;
@@ -194,9 +228,9 @@ bool bi::isZero() const
     return (v.size() == 1 && v[0] == 0) || v.size() == 0;
 }
 
-long long bi::size() const
+size_t bi::size() const
 {
-    return static_cast<long long> (v.size());
+    return v.size();
 }
 
 std::ostream& operator<< (std::ostream& os, const bi& rhs) {
