@@ -37,21 +37,25 @@ public:
 
     int operator[](size_t i) const;
 
-    bool isNegative() const;
-    bool isZero() const;
-    bool isUnity() const;
     size_t size() const;
     bi s() const; // sum of digits
     bi f() const; // sum of the digits factorials
+
+    string tostring() const;
 
     static bi factorial(int);
 
 private:
 
+    char GROUP_SEPARATOR = ' ';
+
     vector<int> v;
     bool negative = false;
 
     bi(vector<int>& v);
+
+    bool isZero() const;
+    bool isUnity() const;
 
     static bi sum(const bi& a, const bi& b); // summation of two positive bi
     static bi subtr(const bi& a, const bi& b); // subtraction of two positive bi, the minued must be greater

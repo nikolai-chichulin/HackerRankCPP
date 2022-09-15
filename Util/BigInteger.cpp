@@ -342,11 +342,6 @@ int bi::operator[](size_t i) const
     return v[i];
 }
 
-bool bi::isNegative() const
-{
-    return negative;
-}
-
 bool bi::isZero() const
 {
     return (v.size() == 1 && v[0] == 0) || v.size() == 0;
@@ -376,6 +371,27 @@ bi bi::f() const
     bi ret;
     for (int i : v) {
         ret = ret + bi::factorial(i);
+    }
+    return ret;
+}
+
+string bi::tostring() const
+{
+    string ret;
+
+    if (isZero()) {
+        ret.push_back('0');
+    }
+    else {
+        for (int i = 0; i < v.size(); i++) {
+            ret.insert(ret.begin(), v[i] + '0');
+            if ((i + 1) % 3 == 0 && i != v.size() - 1) {
+                ret.insert(ret.begin(), GROUP_SEPARATOR);
+            }
+        }
+        if (negative) {
+            ret.insert(ret.begin(), '-');
+        }
     }
     return ret;
 }
@@ -550,17 +566,19 @@ vector<int> bi::subtr(vector<int> a, vector<int> b)
 
 std::ostream& operator<< (std::ostream& os, const bi& rhs) {
 
-    if (rhs.isZero()) {
-        os << 0;
-    }
-    else {
-        if (rhs.isNegative()) {
-            os << '-';
-        }
-        for (int i = 0; i < rhs.size(); i++) {
-            os << rhs[rhs.size() - i - 1];
-        }
-    }
+    os << rhs.tostring();
+
+    //if (rhs.isZero()) {
+    //    os << 0;
+    //}
+    //else {
+    //    if (rhs.isNegative()) {
+    //        os << '-';
+    //    }
+    //    for (int i = 0; i < rhs.size(); i++) {
+    //        os << rhs[rhs.size() - i - 1];
+    //    }
+    //}
 
     return os;
 }

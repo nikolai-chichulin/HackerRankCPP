@@ -27,9 +27,19 @@ void commontests() {
 
 int main() {
 
-    commontests();
+    // commontests();
 
-    //bi i1 = bi::factorial(10);
+    bi i1("-1");
+    bi i2("-16");
+    bi i3("-164");
+    bi i4("-1642");
+    bi i5("-16425");
+    cout << i1 << endl;
+    cout << i2 << endl;
+    cout << i3 << endl;
+    cout << i4 << endl;
+    cout << i5 << endl;
+
     //bi i2 = i1.s();
     //bi i3 = i1.f();
     //cout << i1 << endl;
