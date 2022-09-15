@@ -23,6 +23,7 @@ public:
 
     bi operator+(const bi& rhs) const;
     bi operator-(const bi& rhs) const;
+    bi operator-() const;
     bi operator*(const bi& rhs) const;
     pair<bi, bi> operator/(const bi& rhs);
 

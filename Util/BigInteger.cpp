@@ -110,6 +110,13 @@ bi bi::operator-(const bi& rhs) const
     return ret;
 }
 
+bi bi::operator-() const
+{
+    bi ret = *this;
+    ret.negative = !negative;
+    return ret;
+}
+
 bi bi::operator*(const bi& rhs) const
 {
     bi ret;
