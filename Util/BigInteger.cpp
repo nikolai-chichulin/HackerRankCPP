@@ -46,6 +46,21 @@ bi::bi(const std::string& s)
     }
 }
 
+/// <summary>
+/// Constructor from the given vector.
+/// </summary>
+/// <param name="v">Vector of ints in reversed order.</param>
+bi::bi(vector<int>& v)
+{
+    // Erase the leading zeros
+    while (v.size() > 1 && v[v.size() - 1] == 0) {
+        v.erase(v.end() - 1);
+    }
+
+    this->v = v;
+    this->negative = false;
+}
+
 bi::~bi()
 {
 }
@@ -412,17 +427,6 @@ bi bi::factorial(int n)
         return ret;
     }
     return bi(n) * bi::factorial(n - 1);
-}
-
-bi::bi(vector<int>& v)
-{
-    // Erase the leading zeros
-    while (v.size() > 1 && v[v.size() - 1] == 0) {
-        v.erase(v.end() - 1);
-    }
-
-    this->v = v;
-    this->negative = false;
 }
 
 bi bi::sum(const bi& a, const bi& b)

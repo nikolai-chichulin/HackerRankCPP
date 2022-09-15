@@ -15,6 +15,7 @@ public:
     bi(int i);
     bi(long long i);
     bi(const std::string&);
+    bi(vector<int>& v);
 
     ~bi();
 
@@ -52,8 +53,6 @@ private:
 
     vector<int> v;
     bool negative = false;
-
-    bi(vector<int>& v);
 
     bool isZero() const;
     bool isUnity() const;
