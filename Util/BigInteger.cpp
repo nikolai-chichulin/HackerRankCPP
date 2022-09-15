@@ -7,6 +7,8 @@
 
 #include "BigInteger.h"
 
+const char bi::GROUP_SEPARATOR = ' ';
+
 bi::bi()
 {
 }

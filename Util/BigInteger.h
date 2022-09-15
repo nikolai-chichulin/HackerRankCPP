@@ -47,7 +47,7 @@ public:
 
 private:
 
-    char GROUP_SEPARATOR = ' ';
+    static const char GROUP_SEPARATOR;
 
     vector<int> v;
     bool negative = false;
