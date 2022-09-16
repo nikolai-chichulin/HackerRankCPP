@@ -172,10 +172,11 @@ bi bi::operator*(const bi& rhs) const
     return ret;
 }
 
-pair<bi, bi> bi::operator/(const bi& rhs)
+pair<bi, bi> bi::operator/(const bi& rhs) const
 {
     pair<bi, bi> ret;
 
+    vector<int> v1 = v;
     vector<int> v2 = rhs.v;
 
     // Zero divident/divider, return a pair {empty, empty}
@@ -184,26 +185,26 @@ pair<bi, bi> bi::operator/(const bi& rhs)
     }
 
     // Divident is lesser than the divider, return {empty, v}
-    if (lessthan(v, v2)) {
-        ret.second = v;
+    if (lessthan(v1, v2)) {
+        ret.second = v1;
         return ret;
     }
 
     // The divider is equal to 1, return {v, empty}
     if (v2.size() == 1 && v2[0] == 1) {
-        ret.first = v;
+        ret.first = v1;
         return ret;
     }
 
     // Create a subvector
     // "minuend" - "subtrahend"
-    auto first = v.end() - v2.size();
-    auto last = v.end();
+    auto first = v1.end() - v2.size();
+    auto last = v1.end();
     vector<int> minuend = { first, last };
     vector<int> subtrahend(v2);
 
     // If the subvector is less than the divider, add the next digit
-    while (first != v.begin() && lessthan(minuend, subtrahend)) {
+    while (first != v1.begin() && lessthan(minuend, subtrahend)) {
         first--;
         minuend = { first, last };
     }
@@ -221,7 +222,7 @@ pair<bi, bi> bi::operator/(const bi& rhs)
     subtrahend = v2;
 
     // The following subtractions to the begining of v
-    while (first != v.begin()) {
+    while (first != v1.begin()) {
         m = 1;
         minuend.insert(minuend.begin(), *(--first));
 
@@ -233,7 +234,7 @@ pair<bi, bi> bi::operator/(const bi& rhs)
         bool done = false;
         // If the divident is less than the divider:
         while (lessthan(minuend, subtrahend)) {
-            if (first == v.begin()) { // if we reached the bigining, add 0 and stop
+            if (first == v1.begin()) { // if we reached the bigining, add 0 and stop
                 ret.first.v.insert(ret.first.v.begin(), 0);
                 done = true;
                 break;
@@ -418,6 +419,39 @@ string bi::tostring() const
         }
     }
     return ret;
+}
+
+/// <summary>
+/// Decomposition of a big integer in a basis.
+/// </summary>
+/// <param name="ret">Deomposition array (output).</param>
+/// <param name="v">The integer to decompose (input).</param>
+/// <param name="basis">The basis as an array of vectors (input).</param>
+/// <param name="n">Number of basic numbers (input).</param>
+/// <returns></returns>
+void bi::decomp(bi ret[], const bi basis[], int n) const
+{
+    // Assume the basis is in descending order: {99, 71, 33, 17...}
+    bi rem = *this;
+    for (int i = 0; i < n; i++) {
+        pair<bi, bi> res = rem / basis[i];
+        ret[i] = res.first;
+        rem = res.second;
+    }
+}
+
+bi bi::comp(bi dcp[], int n)
+{
+    vector<int> ret;
+    for (int i = 0; i < n; i++) {
+        bi tmp = dcp[i];
+        while (!tmp.isZero())
+        {
+            ret.push_back(n - i);
+            tmp = tmp - bi(1);
+        }
+    }
+    return bi(ret);
 }
 
 bi bi::factorial(int n)

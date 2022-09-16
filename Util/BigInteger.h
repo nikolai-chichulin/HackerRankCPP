@@ -26,7 +26,7 @@ public:
     bi operator-(const bi& rhs) const;
     bi operator-() const;
     bi operator*(const bi& rhs) const;
-    pair<bi, bi> operator/(const bi& rhs);
+    pair<bi, bi> operator/(const bi& rhs) const;
 
     bool operator==(const bi& rhs) const;
     bool operator!=(const bi& rhs) const;
@@ -44,6 +44,9 @@ public:
     bi f() const; // sum of the digits factorials
 
     string tostring() const;
+
+    void decomp(bi dcp[], const bi basis[], int n) const;
+    static bi comp(bi dcp[], int n);
 
     static bi factorial(int);
 
