@@ -16,6 +16,7 @@ typedef long long li;
 ofstream outf;
 
 bool passed[100001];
+li v[1600001];
 
 li pcv[] = { 0,0,
     1,4,8,15,23,34,44,54,69,88,106,129,152,177,195,226,256,291,324,361,399,442,483,519,564,600,648,703,755,814,856,915,976,1039,1085,
@@ -143,6 +144,73 @@ li solveIII(li n) {
     return s;
 }
 
+li solveIV(li n) {
+
+    li s = 0;
+    for (li base = 2; base <= n; base++) {
+
+        // store the powers the base was raised to
+        // clean up
+        li storedim = 750000;
+        if (base == 2) {
+            storedim = 1600010;
+        }
+        if (base == 3) {
+            storedim = 1000010;
+        }
+        if (base * base > n) {
+            storedim = n + 10;
+        }
+        for (int i = 0; i < storedim; i++)
+        {
+            v[i] = 0;
+        }
+
+        li start = base;
+        li tpmax = 0;
+        if (!passed[start]) { // this row wasn't calculated yet
+
+            s += n - 1; // powers of i
+
+            passed[start] = true; // the base was calculated
+
+            if (base * base > n) {
+                continue;
+            }
+
+            for (li k = 2; k <= n; k++) {
+                v[k] = 1;
+            }
+            li p2fin = n;
+
+            // account for the next powers of the base: base^k = (i^p)^k = i^(pk), p >= 2
+            for (li p = 2; p < 1000000; p++) {
+                start *= base;
+                if (start > n) {
+                    break;
+                }
+                if (!passed[start]) { // base-th row wasn't calculated yet
+                    li kstart = p2fin / p;
+                    for (li k = kstart; k <= n; k++) {
+                        li tp = p * k; // total power of the base, not the starting number
+                        if (v[tp] == 0) {
+                            s++;
+                            v[tp] = 1;
+                        }
+                        if (tp > tpmax) {
+                            tpmax = tp;
+                        }
+                    }
+                    passed[start] = true; // the base was calculated
+                }
+            }
+        }
+        //cout << base << " " << tpmax << endl;
+        //cout << base << endl;
+    }
+    return s;
+}
+
 li solveRND() {
 
     li n = 100;
@@ -244,7 +312,7 @@ int main() {
 
     auto start = std::chrono::high_resolution_clock::now();
 
-    cout << solveIII(20000) << endl;
+    cout << solveIV(100000) << endl;
 
     auto stop = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
