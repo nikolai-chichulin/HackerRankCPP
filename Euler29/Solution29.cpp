@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <fstream>
 #include <set>
+#include <chrono>
 
 #include "BigInteger.h"
 
@@ -27,7 +28,7 @@ li pcv[] = { 0,0,
     30484,30843,31189,31545,31897,32260,32614,32985,33345,33710,34074,34453,34818,35201,35574,35953,36229,36620,36997,37392,37774,38166,
     38554,38951,39339,39742,40138,40542,40941,41356,41756,42175,42582,42998,43410,43833,44138,44563,44983,45409,45831 };
 
-li solve(li n) {
+li solveOld(li n) {
 
     li s = 0;
     for (li i = 2; i <= n; i++) {
@@ -87,13 +88,168 @@ li solveII(li n) {
                 }
             }
         }
+        //cout << base << endl;
     }
     return s;
 }
 
+li solveIII(li n) {
+
+    li s = 0;
+    for (li base = 2; base <= n; base++) {
+        set<li> v; // store the base raised to the powers
+        li start = base;
+        li tpmax = 0;
+        if (!passed[start]) { // this row wasn't calculated yet
+
+            s += n - 1; // powers of i
+
+            passed[start] = true; // the base was calculated
+
+            if (base * base > n) {
+                continue;
+            }
+
+            for (li k = 2; k <= n; k++) {
+                v.insert(k);
+            }
+            li p2fin = n;
+
+            // account for the next powers of the base: base^k = (i^p)^k = i^(pk), p >= 2
+            for (li p = 2; p < 1000000; p++) {
+                start *= base;
+                if (start > n) {
+                    break;
+                }
+                if (!passed[start]) { // base-th row wasn't calculated yet
+                    li kstart = p2fin / p;
+                    for (li k = kstart; k <= n; k++) {
+                        li tp = p * k; // total power of the base, not the starting number
+                        if (v.find(tp) == v.end()) {
+                            s++;
+                            v.insert(tp);
+                        }
+                        if (tp > tpmax) {
+                            tpmax = tp;
+                        }
+                    }
+                    passed[start] = true; // the base was calculated
+                }
+            }
+        }
+        //cout << base << " " << tpmax << endl;
+        //cout << base << endl;
+    }
+    return s;
+}
+
+li solveRND() {
+
+    li n = 100;
+
+    set<li> st;
+    FILE* pFile;
+    fopen_s(&pFile, "Euler29.txt", "w");
+    if (pFile != NULL) {
+        li base = 2;
+        li start = base;
+        li mult = 1;
+        for (int i = 0; i < 4; i++) {
+            fprintf(pFile, "%5lld%2s", start, " ");
+            li added = 0;
+            for (int j = 2; j <= n; j++) {
+                //cout << mult * j << " ";
+                li p = mult * j;
+                if (st.find(p) == st.end()) {
+                    st.insert(p);
+                    fprintf(pFile, "%4lld %1s", p, " ");
+                    added++;
+                }
+                else {
+                    fprintf(pFile, "%4lld!%1s", p, " ");
+                }
+            }
+            mult *= 2;
+            start *= start;
+            //cout << endl;
+            fprintf(pFile, " | added: %4lld\n", added);
+        }
+        fprintf(pFile, "\n");
+
+        // 8
+        base = 8;
+        start = base;
+        mult = 3;
+        for (int i = 0; i < 2; i++) {
+            fprintf(pFile, "%5lld%2s", start, " ");
+            li added = 0;
+            for (int j = 2; j <= n; j++) {
+                //cout << mult * j << " ";
+                li p = mult * j;
+                if (st.find(p) == st.end()) {
+                    st.insert(p);
+                    fprintf(pFile, "%4lld %1s", p, " ");
+                    added++;
+                }
+                else {
+                    fprintf(pFile, "%4lld!%1s", p, " ");
+                }
+            }
+            mult *= 2;
+            start *= start;
+            //cout << endl;
+            fprintf(pFile, " | added: %4lld\n", added);
+        }
+        fprintf(pFile, "\n");
+
+        // 32
+        base = 32;
+        start = base;
+        mult = 5;
+        for (int i = 0; i < 1; i++) {
+            fprintf(pFile, "%5lld%2s", start, " ");
+            li added = 0;
+            for (int j = 2; j <= n; j++) {
+                //cout << mult * j << " ";
+                li p = mult * j;
+                if (st.find(p) == st.end()) {
+                    st.insert(p);
+                    fprintf(pFile, "%4lld %1s", p, " ");
+                    added++;
+                }
+                else {
+                    fprintf(pFile, "%4lld!%1s", p, " ");
+                }
+            }
+            mult *= 2;
+            start *= start;
+            //cout << endl;
+            fprintf(pFile, " | added: %4lld\n", added);
+        }
+
+
+        //for (li i : st) {
+        //    fprintf(pFile, "%4lld %1s", i, " ");
+        //}
+        fclose(pFile);
+    }
+    return 0;
+}
+
 int main() {
 
-    li res = solveII(99999);
+    //for (int i = 0; i < 100001; i++) {
+    //    passed[i] = false;
+    //}
+
+    auto start = std::chrono::high_resolution_clock::now();
+
+    cout << solveIII(20000) << endl;
+
+    auto stop = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+    double dS = duration.count() / 1E6;
+    cout << "Time: " << dS << " seconds" << endl;
 
     //outf.open("Euler29rnd.txt");
     //for (int n = 2; n <= 200; n++) {
