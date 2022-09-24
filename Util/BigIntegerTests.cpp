@@ -67,5 +67,14 @@ bool biTests()
         return false;
     }
 
+    bi a("22456000");
+    bi exp1("11228000");
+    bi exp2();
+    pair<bi, bi> actp = a / bi(2);
+    if (actp.first != exp1 || !actp.second.isZero()) {
+        cout << a << " / " << 2 << " = " << actp.first << " : " << actp.second << endl;
+        return false;
+    }
+
     return true;
 }

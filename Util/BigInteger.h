@@ -22,6 +22,8 @@ public:
     static bi zero();
     static bi unity();
 
+    bool isZero() const;
+
     bi operator+(const bi& rhs) const;
     bi operator-(const bi& rhs) const;
     bi operator-() const;
@@ -57,7 +59,6 @@ private:
     vector<int> v;
     bool negative = false;
 
-    bool isZero() const;
     bool isUnity() const;
 
     static bi sum(const bi& a, const bi& b); // summation of two positive bi
