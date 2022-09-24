@@ -211,6 +211,70 @@ li solveIV(li n) {
     return s;
 }
 
+li solveV(li n) {
+
+    li s = 0;
+    for (li base = 2; base <= n; base++) {
+
+        li start = base;
+        li tpmax = 0;
+        if (!passed[start]) { // this row wasn't calculated yet
+
+            passed[start] = true; // the base was calculated
+            s += n - 1; // powers of i
+
+            if (base * base > n) {
+                continue;
+            }
+
+            li storedim = 750000;
+            if (base == 2) {
+                storedim = 1600010;
+            }
+            if (base == 3) {
+                storedim = 1000010;
+            }
+            if (base * base > n) {
+                storedim = n + 10;
+            }
+            for (int i = 0; i < storedim; i++)
+            {
+                v[i] = 0;
+            }
+
+            for (li k = 2; k <= n; k++) {
+                v[k] = 1;
+            }
+            li p2fin = n;
+
+            // account for the next powers of the base: base^k = (i^p)^k = i^(pk), p >= 2
+            for (li p = 2; p < 1000000; p++) {
+                start *= base;
+                if (start > n) {
+                    break;
+                }
+                if (!passed[start]) { // base-th row wasn't calculated yet
+                    li kstart = p2fin / p;
+                    for (li k = kstart; k <= n; k++) {
+                        li tp = p * k; // total power of the base, not the starting number
+                        if (v[tp] == 0) {
+                            s++;
+                            v[tp] = 1;
+                        }
+                        if (tp > tpmax) {
+                            tpmax = tp;
+                        }
+                    }
+                    passed[start] = true; // the base was calculated
+                }
+            }
+        }
+        //cout << base << " " << tpmax << endl;
+        //cout << base << endl;
+    }
+    return s;
+}
+
 li solveRND() {
 
     li n = 100;
@@ -306,37 +370,33 @@ li solveRND() {
 
 int main() {
 
-    //for (int i = 0; i < 100001; i++) {
-    //    passed[i] = false;
-    //}
+    //auto start = std::chrono::high_resolution_clock::now();
 
-    auto start = std::chrono::high_resolution_clock::now();
+    //cout << solveV(100000) << endl;
 
-    cout << solveIV(100000) << endl;
+    //auto stop = std::chrono::high_resolution_clock::now();
+    //auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+    //double dS = duration.count() / 1E6;
+    //cout << "Time: " << dS << " seconds" << endl;
 
-    auto stop = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
-    double dS = duration.count() / 1E6;
-    cout << "Time: " << dS << " seconds" << endl;
+    outf.open("Euler29rnd.txt");
+    for (int n = 2; n <= 200; n++) {
 
-    //outf.open("Euler29rnd.txt");
-    //for (int n = 2; n <= 200; n++) {
+        for (int i = 0; i < 100001; i++) {
+            passed[i] = false;
+        }
 
-    //    for (int i = 0; i < 100001; i++) {
-    //        passed[i] = false;
-    //    }
-
-    //    li resExp = pcv[n];
-    //    li res = solveII(n);
-    //    if (res != resExp) {
-    //        cout << "Alarm!" << endl;
-    //        break;
-    //    }
-    //    outf << n << " " << res << endl;
-    //    if (n % 1 == 0) {
-    //        cout << n << " " << res << endl;
-    //    }
-    //}
-    //outf.close();
+        li resExp = pcv[n];
+        li res = solveV(n);
+        if (res != resExp) {
+            cout << "Alarm!" << endl;
+            break;
+        }
+        outf << n << " " << res << endl;
+        if (n % 1 == 0) {
+            cout << n << " " << res << endl;
+        }
+    }
+    outf.close();
     return 0;
 }
