@@ -8,17 +8,21 @@
 #include <chrono>
 using namespace std;
 
-ofstream outf;
+ofstream outf1;
+ofstream outf2;
 
 typedef long long li;
 typedef vector<int> vi;
 
-vector<int> tovector(li n) {
+vector<int> tovector(li n, li l) {
     vector<int> ret;
     while (n > 0) {
         int rem = n % 10;
         ret.push_back(rem);
         n /= 10;
+    }
+    while ((li)ret.size() < l) {
+        ret.push_back(0);
     }
     return ret;
 }
@@ -118,24 +122,46 @@ vector<vi> mixing(vi v1, vi v2) {
     return ret;
 }
 
-set<pair<li, li>> passed;
-void solve() {
+void solve(li n, li k) {
 
-    for (li denb = 11; denb < 99; denb++) { // loop over base denominator (2-digit)
-        //cout << "base denominator:" << denb << endl;
-        vi denbv = tovector(denb);
-        for (li numb = 11; numb < denb; numb++) { // loop over base numerator (2-digit)
+    set<pair<li, li>> passed;
+
+    li denbmax = 9;
+    if (n - k == 2) {
+        denbmax = 99;
+    }
+    else if (n - k == 3) {
+        denbmax = 999;
+    }
+
+    li rembmin = 1;
+    li rembmax = 9;
+    if (k == 2) {
+        rembmin = 10;
+        rembmax = 99;
+    }
+    else if (k == 3) {
+        rembmin = 100;
+        rembmax = 999;
+    }
+
+    li sumnum = 0;
+    li sumden = 0;
+    for (li denb = 1; denb <= denbmax; denb++) { // loop over base denominator (2-digit)
+        cout << "<---------- base denominator:" << denb << " ---------->" << endl;
+        vi denbv = tovector(denb, n - k);
+        for (li numb = 1; numb < denb; numb++) { // loop over base numerator (2-digit)
             //cout << " base numerator:" << numb << endl;
-            vi numbv = tovector(numb);
-            for (li remb = 11; remb < 99; remb++) { // loop over the removable part (2-digit)
+            vi numbv = tovector(numb, n - k);
+            for (li remb = rembmin; remb <= rembmax; remb++) { // loop over the removable part (2-digit)
 
                 // Exclude numbers with zeroes
-                if (remb % 10 == 0) {
+                if (containszeroes(remb)) {
                     continue;
                 }
 
                 //cout << "  removable part:" << remb << endl;
-                vi rembv = tovector(remb);
+                vi rembv = tovector(remb, k);
 
                 vi numv(numbv);
                 numv.insert(numv.end(), rembv.begin(), rembv.end()); // the full numerator
@@ -147,7 +173,17 @@ void solve() {
 
                 // Loop over permutations of the numerator and denominator
                 for (vi numtmp : numperm) {
+
+                    // Skip numbers starting with zeroes
+                    if (numtmp[numtmp.size() - 1] == 0) {
+                        continue;
+                    }
                     for (vi dentmp : denperm) {
+
+                        // Skip numbers starting with zeroes
+                        if (dentmp[dentmp.size() - 1] == 0) {
+                            continue;
+                        }
 
                         // 1. Check the main condition: numtmp/dentmp == numbv/denbv
                         //    or: numtmp*denbv = numbv*dentmp
@@ -155,25 +191,36 @@ void solve() {
                         li numfull = tonumber(numtmp);
                         li denfull = tonumber(dentmp);
                         bool good = denb * numfull == numb * denfull;
-                        if (good && passed.find(pair<li, li>(numfull, denfull)) == passed.end()) {
+                        if (good && passed.find(pair<li, li>(denfull, numfull)) == passed.end()) {
 
                             // Check if the order of the base part is conserved in the full numerator/denominator
                             bool numordergood = isorderconserved(numbv, numtmp);
                             bool denordergood = isorderconserved(denbv, dentmp);
                             if (numordergood && denordergood) {
-                                outf << numfull << "/" << denfull << " = " << numb << "/" << denb << " removed: " << remb << endl;
+                                outf1 << numfull << "/" << denfull << " = " << numb << "/" << denb << " removed: " << remb << endl;
                                 cout << numfull << "/" << denfull << " = " << numb << "/" << denb << " removed: " << remb << endl;
+                                sumnum += numfull;
+                                sumden += denfull;
+                                passed.insert(pair<li, li>(denfull, numfull));
                             }
                             else {
                                 cout << numfull << "/" << denfull << " = " << numb << "/" << denb << " removed: " << remb << " - bad order, excluded" << endl;
                             }
-                            passed.insert(pair<li, li>(numfull, denfull));
                         }
                     }
                 }
             }
         }
     }
+
+    for (auto p : passed) {
+        outf2 << p.first << " " << p.second << endl;
+    }
+
+    outf1 << "sumnum: " << sumnum << endl;
+    outf1 << "sumden: " << sumden << endl;
+    outf2 << "sumnum: " << sumnum << endl;
+    outf2 << "sumden: " << sumden << endl;
 }
 
 void testImpl(vi s, vi l, bool exp) {
@@ -273,16 +320,18 @@ int main() {
     //vi v = { 1,2,3,4 };
     //vector<vi> res = mixing(9, v, 3);
 
-    test1();
-    test2();
+    //test1();
+    //test2();
 
-    //outf.open("euler33.txt");
-    //auto start = std::chrono::high_resolution_clock::now();
-    //solve();
-    //auto stop = std::chrono::high_resolution_clock::now();
-    //auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
-    //double t = duration.count() / 1E6;
-    //cout << " time = " << t << " s" << endl;
-    //outf.close();
+    outf1.open("euler33_1.txt");
+    outf2.open("euler33_2.txt");
+    auto start = std::chrono::high_resolution_clock::now();
+    solve(2, 1);
+    auto stop = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+    double t = duration.count() / 1E6;
+    cout << " time = " << t << " s" << endl;
+    outf1.close();
+    outf2.close();
     return 0;
 }
