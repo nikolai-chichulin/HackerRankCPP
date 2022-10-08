@@ -33,6 +33,20 @@ li tonumber(vi v) {
     return ret;
 }
 
+bool containszeroes(li n) {
+    if (n == 0) {
+        return true;
+    }
+    while (n > 0) {
+        int rem = n % 10;
+        if (rem == 0) {
+            return true;
+        }
+        n /= 10;
+    }
+    return false;
+}
+
 /// <summary>
 /// Given two numbers: short and long so that all digits of the short are in the digits of the long one.
 /// Checks if the order of the short's digits are the same as in the long.
@@ -171,7 +185,7 @@ void testImpl(vi s, vi l, bool exp) {
     }
 }
 
-void test() {
+void test1() {
 
     vi s = { 4,5 };
     vi l = { 1,2,3,4,5 };
@@ -202,20 +216,73 @@ void test() {
     testImpl(s, l, true);
 }
 
+void test2() {
+
+    int n = 52891618;
+    if (containszeroes(n)) {
+        cout << "Failed" << endl;
+    }
+    else {
+        cout << "Passed" << endl;
+    }
+
+    n = 1;
+    if (containszeroes(n)) {
+        cout << "Failed" << endl;
+    }
+    else {
+        cout << "Passed" << endl;
+    }
+
+    n = 0;
+    if (!containszeroes(n)) {
+        cout << "Failed" << endl;
+    }
+    else {
+        cout << "Passed" << endl;
+    }
+
+    n = 10;
+    if (!containszeroes(n)) {
+        cout << "Failed" << endl;
+    }
+    else {
+        cout << "Passed" << endl;
+    }
+
+    n = 290618;
+    if (!containszeroes(n)) {
+        cout << "Failed" << endl;
+    }
+    else {
+        cout << "Passed" << endl;
+    }
+
+    n = 1906180;
+    if (!containszeroes(n)) {
+        cout << "Failed" << endl;
+    }
+    else {
+        cout << "Passed" << endl;
+    }
+
+}
+
 int main() {
 
     //vi v = { 1,2,3,4 };
     //vector<vi> res = mixing(9, v, 3);
 
-    //test();
+    test1();
+    test2();
 
-    outf.open("euler33.txt");
-    auto start = std::chrono::high_resolution_clock::now();
-    solve();
-    auto stop = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
-    double t = duration.count() / 1E6;
-    cout << " time = " << t << " s" << endl;
-    outf.close();
+    //outf.open("euler33.txt");
+    //auto start = std::chrono::high_resolution_clock::now();
+    //solve();
+    //auto stop = std::chrono::high_resolution_clock::now();
+    //auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+    //double t = duration.count() / 1E6;
+    //cout << " time = " << t << " s" << endl;
+    //outf.close();
     return 0;
 }
