@@ -107,13 +107,19 @@ vector<vi> mixing(vi v1, vi v2) {
 set<pair<li, li>> passed;
 void solve() {
 
-    for (li denb = 11; denb < 99; denb++) {
+    for (li denb = 11; denb < 99; denb++) { // loop over base denominator (2-digit)
         //cout << "base denominator:" << denb << endl;
         vi denbv = tovector(denb);
-        for (li numb = 11; numb < denb; numb++) {
+        for (li numb = 11; numb < denb; numb++) { // loop over base numerator (2-digit)
             //cout << " base numerator:" << numb << endl;
             vi numbv = tovector(numb);
-            for (li remb = 11; remb < 99; remb++) {
+            for (li remb = 11; remb < 99; remb++) { // loop over the removable part (2-digit)
+
+                // Exclude numbers with zeroes
+                if (remb % 10 == 0) {
+                    continue;
+                }
+
                 //cout << "  removable part:" << remb << endl;
                 vi rembv = tovector(remb);
 
@@ -125,17 +131,19 @@ void solve() {
                 vector<vi> numperm = permutations(numv); // permutations of the full numerator
                 vector<vi> denperm = permutations(denv); // permutations of the full denominator
 
-                // Loop over permutations
+                // Loop over permutations of the numerator and denominator
                 for (vi numtmp : numperm) {
                     for (vi dentmp : denperm) {
 
-                        // find numtmp/dentmp == numbv/denbv
-                        // numtmp*denbv = numbv*dentmp
+                        // 1. Check the main condition: numtmp/dentmp == numbv/denbv
+                        //    or: numtmp*denbv = numbv*dentmp
+                        // 2. Memorization in the set
                         li numfull = tonumber(numtmp);
                         li denfull = tonumber(dentmp);
                         bool good = denb * numfull == numb * denfull;
                         if (good && passed.find(pair<li, li>(numfull, denfull)) == passed.end()) {
 
+                            // Check if the order of the base part is conserved in the full numerator/denominator
                             bool numordergood = isorderconserved(numbv, numtmp);
                             bool denordergood = isorderconserved(denbv, dentmp);
                             if (numordergood && denordergood) {
