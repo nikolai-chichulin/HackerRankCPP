@@ -136,6 +136,7 @@
     <ClCompile Include="IntegerAsVectorsTester.cpp" />
     <ClCompile Include="MultTests.cpp" />
     <ClCompile Include="PowerTests.cpp" />
+    <ClCompile Include="PrimesTest.cpp" />
     <ClCompile Include="SubtrTests.cpp" />
     <ClCompile Include="SumTests.cpp" />
     <ClCompile Include="Util.cpp" />
@@ -150,6 +151,7 @@
     <ClInclude Include="IntegerAsVectorsTester.h" />
     <ClInclude Include="MultTests.h" />
     <ClInclude Include="PowerTests.h" />
+    <ClInclude Include="PrimesTest.h" />
     <ClInclude Include="SubtrTests.h" />
     <ClInclude Include="SumTests.h" />
     <ClInclude Include="typedefs.h" />

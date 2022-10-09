@@ -6,6 +6,7 @@
 #include "DivTests.h"
 #include "CompDecompTests.h"
 #include "BigIntegerTests.h"
+#include "PrimesTest.h"
 
 #include "BigInteger.h"
 
@@ -83,7 +84,14 @@ void euler245() {
 
 int main() {
 
-    commontests();
+    if (!primetest()) {
+        cout << "Failed." << endl;
+    }
+    else {
+        cout << "Passed." << endl;
+    }
+
+    //commontests();
 
     //outf.open("output.txt");
     //euler245();

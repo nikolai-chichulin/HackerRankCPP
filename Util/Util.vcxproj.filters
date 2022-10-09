@@ -51,6 +51,9 @@
     <ClCompile Include="BigIntegerTests.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="PrimesTest.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="IntegerAsVectors.h">
@@ -90,6 +93,9 @@
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="BigIntegerTests.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="PrimesTest.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>
