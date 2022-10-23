@@ -32,7 +32,19 @@ const vl gv[] = { {1},{2},{5},{1,5},{2,5},{3},{1,3},{2,3},{6},{1,6},{2,6},{4,4},
     //   51                            52                              53                                  54
         {3,4,4,4,6,6,6,6,8,8,8,8,9,9},{1,3,4,4,4,6,6,6,6,8,8,8,8,9,9},{1,2,2,4,5,5,7,8,8,9,9,9,9,9,9,9,9},{1,2,3,3,4,5,5,7,8,8,9,9,9,9,9,9,9,9},
     //   55                                      56
-        {1,3,3,3,6,6,6,7,9,9,9,9,9,9,9,9,9,9,9},{1,2,2,4,5,5,5,6,6,6,6,7,9,9,9,9,9,9,9,9,9,9,9} };
+        {1,3,3,3,6,6,6,7,9,9,9,9,9,9,9,9,9,9,9},{1,2,2,4,5,5,5,6,6,6,6,7,9,9,9,9,9,9,9,9,9,9,9},
+    //   57                                                 58
+        {1,2,3,3,4,5,5,5,6,6,6,6,7,9,9,9,9,9,9,9,9,9,9,9}, {1,3,4,4,4,5,5,8,8,8,8,8,8,8,9,9,9,9,9,9,9,9,9,9,9,9,9},
+    //   59
+        {1,2,2,3,3,3,4,4,4,4,5,6,6,6,7,7,7,7,7,7,8,8,8,8,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9},
+    //   60
+        {3,4,4,4,6,6,7,7,7,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9},
+    //   61
+        {1,3,4,4,4,6,6,7,7,7,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9},
+    //   62
+        {1,2,2,3,3,3,4,4,4,4,5,5,5,5,5,6,6,6,6,7,8,8,8,8,8,8,8,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9},
+    //   63
+        {1,2,3,3,4,5,5,5,5,5,8,8,8,8,8,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9} };
 
 /// <summary>
 /// Inverses the given vector.
@@ -753,16 +765,16 @@ void findMinDecomp(vl* decompFactMin, ls n) {
 
     decomp(decompFactMin, inverse(fgnMin), basis, maxdigit);
 
-    outf << "n = " << n << " f(g(n)) = ";
-    out(fgnMin);
-    outf << endl;
+    //outf << "n = " << n << " f(g(n)) = ";
+    //out(fgnMin);
+    //outf << endl;
 }
 
 void solve() {
 
     vl dcomp[maxdigit];
     vl s;
-    for (ls n = 1; n <= 640; n += 1) {
+    for (ls n = 1; n <= 70; n += 1) {
 
         vl gn;
         vl sgn;
@@ -772,30 +784,34 @@ void solve() {
         }
         else {
             findMinDecomp(dcomp, n);
-            //gn = composeG(dcomp, maxdigits);
-            //sgn = sumOfDigitsV(gn);
-            sgn = sumOfDigitsV(dcomp);
+            gn = composeG(dcomp, maxdigit);
+            sgn = sumOfDigitsV(gn);
+            // sgn = sumOfDigitsV(dcomp);
         }
 
         s = sum(s, sgn);
-        outf << "n = " << n << endl;
+        outf << " bi(";
+        out(inverse(s));
+        outf << "), ";
+        //outf << "n = " << n << endl;
         //outf << " gn =       ";
         //out(inverse(gn));
         //outf << endl;
-        outf << " s(gn) = ";
-        out(inverse(sgn));
-        outf << endl;
-        outf << " summ(s(gn)) = ";
-        out(inverse(s));
-        outf << endl;
-        outf << " decomp((gn)) : ";
-        for (ls i = 0; i < 9; i++) {
-            vl d = dcomp[i];
-            outf << maxdigit - i << ':';
-            out(inverse(d));
-            outf << ' ';
-        }
-        outf << endl;
+        //outf << " s(gn) = ";
+        //out(inverse(sgn));
+        //outf << endl;
+        //outf << " summ(s(gn)) = ";
+        //out(inverse(s));
+        //outf << endl;
+        //outf << " decomp((gn)) : ";
+        //for (ls i = 0; i < 9; i++) {
+        //    vl d = dcomp[i];
+        //    outf << maxdigit - i << ':';
+        //    out(inverse(d));
+        //    outf << ' ';
+        //}
+        //outf << endl;
+        //outf << endl;
     }
 }
 
