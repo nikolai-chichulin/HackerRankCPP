@@ -16,6 +16,7 @@ sz imult = 0; // number of multiplications
 const sz limfact = 20000;
 sz factors[limfact]; // prime factors
 sz nfact = 0; // number of different prime factors
+sz firstactiveprime = 0;
 
 ofstream outf;
 bool output;
@@ -149,6 +150,17 @@ void crossout(sz s, sz nmax, li step) {
     }
 }
 
+void crossoutandredefine(sz s, sz nmax, li step) {
+    if (output)
+        outf << "            * divisible; cross out starting with " << s << " with step=" << step << endl;
+    for (sz ind = s; ind <= nmax; ind += step) {
+        possibleprime[ind] = false;
+        while (polynom[ind] % step == 0) {
+            polynom[ind] /= step;
+        }
+    }
+}
+
 void preloop() {
     for (sz iprime = 0; iprime < 100; iprime++) {
         bool active = false;
@@ -206,6 +218,49 @@ void mainloop(sz nmax) {
         outf.close();
 }
 
+/// <summary>
+/// The main loop. The simple version.
+/// </summary>
+/// <param name="nmax"></param>
+void mainloopwithrededine(sz nmax) {
+
+    if (output)
+        outf = ofstream("Euler216-test.txt");
+
+    // for each prime "Pr" it makes sense to do trial division only in the range of indexes [0; Pr-1]
+    // after this range, all division results are repeatable with step Pr so that we can cross out
+    // the composite numbers with the step Pr. 
+    // After that, if we have crossed "distant" non-primes,
+    // for each ind we need test only primes in the range [ind; sqrt(P(n))]
+
+    // P(0) = c
+    // P(1) = a+b+c
+
+    li pmax = polynom[nmax];
+    // loop over the polynom terms
+    for (sz ind = 0; ind <= nmax; ind++) {
+        if (output)
+            outf << "Level 1: testing n=" << ind << " P(n)=" << polynom[ind] << " " << possibleprime[ind] << endl;
+
+        if (ind == primes[firstactiveprime]) {
+            primedisabled[firstactiveprime++] = true;
+        }
+
+        if (polynom[ind] == 1) {
+            possibleprime[ind] = false;
+        }
+        else {
+            bool thisisaprime = primetest(polynom[ind]);
+            for (sz ifact = 0; ifact < nfact; ifact++) {
+                sz indst = thisisaprime ? ind + factors[ifact] : ind;
+                crossoutandredefine(indst, nmax, factors[ifact]);
+            }
+        }
+    }
+    if (output)
+        outf.close();
+}
+
 ul run(int a, int b, int c, sz nmax, bool out) {
     auto start = std::chrono::high_resolution_clock::now();
     cout << "New solution started" << endl;
@@ -220,7 +275,7 @@ ul run(int a, int b, int c, sz nmax, bool out) {
     //preloop();
 
     // the main loop
-    mainloop(nmax);
+    mainloopwithrededine(nmax);
 
     ul ret = 0;
     for (sz i = 0; i <= nmax; i++) {
