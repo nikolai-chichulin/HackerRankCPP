@@ -144,7 +144,7 @@ bool primetest(li p) {
 /// <param name="step"></param>
 void crossout(sz s, sz nmax, li step) {
     if (output)
-        outf << "            * divisible; cross out starting with " << s << " with step=" << step << endl;
+        outf << "  * cross out starting with " << s << " with step=" << step << endl;
     for (sz ind = s; ind <= nmax; ind += step) {
         possibleprime[ind] = false;
     }
@@ -184,7 +184,7 @@ void preloop() {
 void mainloop(sz nmax) {
 
     if (output)
-        outf = ofstream("Euler216-test.txt");
+        outf = ofstream("Euler216-part1.txt");
 
     // for each prime "Pr" it makes sense to do trial division only in the range of indexes [0; Pr-1]
     // after this range, all division results are repeatable with step Pr so that we can cross out
@@ -198,16 +198,17 @@ void mainloop(sz nmax) {
     li pmax = polynom[nmax];
     // loop over the polynom terms
     for (sz ind = 0; ind <= nmax; ind++) {
-        if (output)
-            outf << "Level 1: testing n=" << ind << " P(n)=" << polynom[ind] << " " << possibleprime[ind] << endl;
-
         if (possibleprime[ind]) {
             if (polynom[ind] == 1) {
                 possibleprime[ind] = false;
             }
             else {
                 bool thisisaprime = primetest(polynom[ind]);
+                if (output)
+                    outf << "Testing P(" << ind << ")=" << polynom[ind] << " " << thisisaprime << endl;
                 for (sz ifact = 0; ifact < nfact; ifact++) {
+                    if (output)
+                        outf << " * factor " << ifact + 1 << " = " << factors[ifact] << endl;
                     sz indst = thisisaprime ? ind + factors[ifact] : ind;
                     crossout(indst, nmax, factors[ifact]);
                 }
@@ -275,7 +276,7 @@ ul run(int a, int b, int c, sz nmax, bool out) {
     //preloop();
 
     // the main loop
-    mainloopwithrededine(nmax);
+    mainloop(nmax);
 
     ul ret = 0;
     for (sz i = 0; i <= nmax; i++) {
@@ -284,16 +285,26 @@ ul run(int a, int b, int c, sz nmax, bool out) {
         }
     }
 
+    if (output)
+        outf = ofstream("Euler216-part2.txt");
     sz idivtot = 0;
     sz divmax = 0;
+    sz ind = 0;
     for (sz i = 0; i < nprimes; i++) {
+        idivtot += idiv[i];
+        if (i > divmax) {
+            divmax = i;
+        }
         if (idiv[i] > 0) {
-            idivtot += idiv[i];
-            if (i > divmax) {
-                divmax = i;
-            }
+            ind++;
+            if (output)
+                outf << ind << " : " << primes[i] << " : " << idiv[i] << " : " << idivtot << endl;
         }
     }
+    if (output)
+        outf << idivtot << endl;
+    if (output)
+        outf.close();
 
     auto stop = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);

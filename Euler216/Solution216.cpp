@@ -452,7 +452,7 @@ int main() {
     int a = 2;
     int b = 0;
     int c = 1;
-    size_t n = 1000;
+    size_t n = 10000;
     //vector<li> primes = makeprimeswithsieve(2 * n);
 
     //auto start = std::chrono::high_resolution_clock::now();
