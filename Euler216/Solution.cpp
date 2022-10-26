@@ -10,6 +10,7 @@ const sz limprimes = 2000000; // number of primes below 20 000 000
 sz primes[limprimes]; // primes
 sz nprimes = 0; // actual number of primes
 bool primedisabled[limprimes]; // flags to enable/disable the primes
+sz primecount[limprimes];
 sz idiv[limprimes]; // number of divisions by primes
 sz imult = 0; // number of multiplications
 
@@ -99,18 +100,21 @@ void init(int a, int b, int c, sz nmax) {
 /// <summary>
 /// Factorization. Makes all prime factors of p, including p itself if it is a prime.
 /// </summary>
-/// <param name="p"></param>
+/// <param name="p">The polynom</param>
+/// <param name="ind">Index of the polynom p</param>
 /// <returns></returns>
-bool primetest(li p) {
+bool primetest(li p, sz ind) {
     nfact = 0;
     bool ret = false;
     if (p == 2) {
         ret = true;
         factors[nfact++] = 2;
+        primecount[0]++;
     }
     else if (p == 3) {
         ret = true;
         factors[nfact++] = 3;
+        primecount[1]++;
     }
     else if (p > 1) {
         for (sz iprime = 0; iprime < nprimes; iprime++) { // loop for small primes (<= sqrt(p))
@@ -126,11 +130,18 @@ bool primetest(li p) {
             if (p % prime == 0)
             {
                 factors[nfact++] = prime;
+                primecount[iprime]++;
+                if (primecount[iprime] == 2) { // disable prime if it's encountered twice
+                    primedisabled[iprime] = true;
+                }
             }
         }
         if (nfact == 0) { // if no small primesa - this is a prime, add the number itself
             ret = true;
             factors[nfact++] = p;
+        }
+        else if (nfact == 1 && factors[nfact - 1] * factors[nfact - 1] != p) {
+            factors[nfact++] = p / factors[nfact - 1];
         }
     }
     return ret;
@@ -147,33 +158,6 @@ void crossout(sz s, sz nmax, li step) {
         outf << "  * cross out starting with " << s << " with step=" << step << endl;
     for (sz ind = s; ind <= nmax; ind += step) {
         possibleprime[ind] = false;
-    }
-}
-
-void crossoutandredefine(sz s, sz nmax, li step) {
-    if (output)
-        outf << "            * divisible; cross out starting with " << s << " with step=" << step << endl;
-    for (sz ind = s; ind <= nmax; ind += step) {
-        possibleprime[ind] = false;
-        while (polynom[ind] % step == 0) {
-            polynom[ind] /= step;
-        }
-    }
-}
-
-void preloop() {
-    for (sz iprime = 0; iprime < 100; iprime++) {
-        bool active = false;
-        for (sz ind = 0; ind < primes[iprime]; ind++) {
-            if (polynom[ind] >= primes[iprime]) {
-                idiv[iprime]++;
-                if (polynom[ind] % primes[iprime] == 0) {
-                    active = true;
-                    break;
-                }
-            }
-        }
-        primedisabled[iprime] = !active;
     }
 }
 
@@ -203,7 +187,7 @@ void mainloop(sz nmax) {
                 possibleprime[ind] = false;
             }
             else {
-                bool thisisaprime = primetest(polynom[ind]);
+                bool thisisaprime = primetest(polynom[ind], ind);
                 if (output)
                     outf << "Testing P(" << ind << ")=" << polynom[ind] << " " << thisisaprime << endl;
                 for (sz ifact = 0; ifact < nfact; ifact++) {
@@ -212,49 +196,6 @@ void mainloop(sz nmax) {
                     sz indst = thisisaprime ? ind + factors[ifact] : ind;
                     crossout(indst, nmax, factors[ifact]);
                 }
-            }
-        }
-    }
-    if (output)
-        outf.close();
-}
-
-/// <summary>
-/// The main loop. The simple version.
-/// </summary>
-/// <param name="nmax"></param>
-void mainloopwithrededine(sz nmax) {
-
-    if (output)
-        outf = ofstream("Euler216-test.txt");
-
-    // for each prime "Pr" it makes sense to do trial division only in the range of indexes [0; Pr-1]
-    // after this range, all division results are repeatable with step Pr so that we can cross out
-    // the composite numbers with the step Pr. 
-    // After that, if we have crossed "distant" non-primes,
-    // for each ind we need test only primes in the range [ind; sqrt(P(n))]
-
-    // P(0) = c
-    // P(1) = a+b+c
-
-    li pmax = polynom[nmax];
-    // loop over the polynom terms
-    for (sz ind = 0; ind <= nmax; ind++) {
-        if (output)
-            outf << "Level 1: testing n=" << ind << " P(n)=" << polynom[ind] << " " << possibleprime[ind] << endl;
-
-        if (ind == primes[firstactiveprime]) {
-            primedisabled[firstactiveprime++] = true;
-        }
-
-        if (polynom[ind] == 1) {
-            possibleprime[ind] = false;
-        }
-        else {
-            bool thisisaprime = primetest(polynom[ind]);
-            for (sz ifact = 0; ifact < nfact; ifact++) {
-                sz indst = thisisaprime ? ind + factors[ifact] : ind;
-                crossoutandredefine(indst, nmax, factors[ifact]);
             }
         }
     }
@@ -271,9 +212,6 @@ ul run(int a, int b, int c, sz nmax, bool out) {
 
     // init data
     init(a, b, c, nmax);
-
-    // preloop
-    //preloop();
 
     // the main loop
     mainloop(nmax);
