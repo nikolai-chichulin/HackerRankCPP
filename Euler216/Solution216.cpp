@@ -17,8 +17,11 @@ bool chained[11000000];
 li dv[11000000]; // least divisors != 1
 li pol[11000000];
 size_t idivBF = 0;
+size_t nprimetests = 0;
 
 bool isprime(li n) {
+
+    nprimetests++;
 
     if (n == 2 || n == 3) {
         return true;
@@ -427,6 +430,7 @@ li solveBF(li a, li b, li c, li nmax) {
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
     double t = duration.count() / 1E6;
     cout << "BF done. " << endl;
+    cout << "n prime tests   = " << nprimetests << endl;
     cout << "n divisions     = " << idivBF << endl;
     cout << "primes found    = " << np << endl;
     cout << "execution time  = " << t << " s" << endl;
@@ -452,18 +456,18 @@ int main() {
     int a = 2;
     int b = 0;
     int c = 1;
-    size_t n = 10000;
+    size_t n = 100000;
     //vector<li> primes = makeprimeswithsieve(2 * n);
 
     //auto start = std::chrono::high_resolution_clock::now();
 
-    for (li i = 0; i <= n; i++) {
-        primeP[i] = true;
-        dv[i] = i;
-        pol[i] = p(a, b, c, i);
-    }
-    cout << "Data done for n = " << n << endl;
-    cout << "--------------------" << endl;
+    //for (li i = 0; i <= n; i++) {
+    //    primeP[i] = true;
+    //    dv[i] = i;
+    //    pol[i] = p(a, b, c, i);
+    //}
+    //cout << "Data done for n = " << n << endl;
+    //cout << "--------------------" << endl;
 
     //indextest(a, b, c, n);
     //test(n);
@@ -505,8 +509,9 @@ int main() {
     //t = duration.count() / 1E6;
     //cout << " time = " << t << " s" << endl;
 
-    li res1 = solveBF(a, b, c, n);
-    li res2 = run(a, b, c, n, true);
+    //li resBF = solveBF(a, b, c, n);
+    //li res1 = run1(a, b, c, n, false);
+    li res2 = run2(a, b, c, n, false);
 
     return 0;
 }

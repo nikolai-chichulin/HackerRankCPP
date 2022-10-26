@@ -16,6 +16,7 @@ typedef long long li;
 typedef unsigned long long ul;
 typedef size_t sz;
 
-ul run(int a, int b, int c, sz nmax, bool out);
+ul run1(int a, int b, int c, sz nmax, bool out);
+ul run2(int a, int b, int c, sz nmax, bool out);
 
 #endif // !SOLUTION_H
