@@ -4,451 +4,206 @@
 #include <iostream>
 #include <algorithm>
 #include <chrono>
-
-#include "Util.h"
-#include "Solution.h"
+#include <fstream>
 
 using namespace std;
 
 typedef long long li;
+typedef size_t sz;
 
-bool primeP[11000000];
-bool chained[11000000];
-li dv[11000000]; // least divisors != 1
-li pol[11000000];
-size_t idivBF = 0;
-size_t nprimetests = 0;
+// polynom
+const int lim = 20000000; // max possible number of the polynom terms
+li polynom[lim]; // polynom values p(n) = an^2 + bn + c
+bool possibleprime[lim]; // is term P(n) prime or not, n = [0; lim-1]
 
-bool isprime(li n) {
+li ndiv = 0;
 
-    nprimetests++;
+const sz limfact = 20000;
+sz factors[limfact]; // prime factors
+sz nfact = 0; // number of different prime factors
 
-    if (n == 2 || n == 3) {
-        return true;
+// primes
+const sz limprimes = 2000000; // number of primes below 20 000 000
+sz primes[limprimes]; // primes
+sz nprimes = 0; // actual number of primes
+
+/// <summary>
+/// Construct primes up to nmax with Erato sieve.
+/// </summary>
+/// <param name="nmax"></param>
+/// <returns></returns>
+void constructprimes(sz nmax) {
+
+    // Basics
+    bool* ispr = new bool[nmax + 1];
+    ispr[0] = false;
+    ispr[1] = false;
+    for (sz i = 2; i <= nmax; i++) {
+        ispr[i] = true;
     }
 
-    idivBF++;
-    if (n <= 1 || n % 2 == 0 || n % 3 == 0) {
-        return false;
-    }
-
-    for (li i = 5; i * i <= n; i += 6)
-    {
-        idivBF++;
-        if (n % i == 0 || n % (i + 2) == 0) {
-            return false;
+    // Main loop
+    for (sz i = 2; i <= nmax; i++) {
+        if (ispr[i]) {
+            sz jst = i * i;
+            for (sz j = jst; j <= nmax; j += i) {
+                ispr[j] = false;
+            }
         }
     }
 
-    return true;
-}
-
-bool isprimen(vector<li> primes, li n) {
-
-    if (n == 0 || n == 1) {
-        return false;
-    }
-
-    if (n == 2 || n == 3 || n == 5 || n == 7) {
-        return true;
-    }
-
-    for (size_t i = 0; i < primes.size(); i++) {
-        li prime = primes[i];
-        if (n % prime == 0) {
-            return false;
+    sz nnonprimes = 0;
+    for (sz i = 0; i <= nmax; i++) {
+        if (ispr[i]) {
+            primes[nprimes] = i;
+            nprimes++;
+        }
+        else {
+            nnonprimes++;
         }
     }
+    //cout << "primes     = " << nprimes << endl;
+    //cout << "non-primes = " << nnonprimes << endl;
+    //cout << "total      = " << nprimes + nnonprimes << endl;
 
-    return true;
+    delete[] ispr;
 }
 
 /// <summary>
-/// Least divisor.
+/// Constructs prime factorizations of the given number.
 /// </summary>
-/// <param name="n"></param>
+/// <param name="p">The number</param>
 /// <returns></returns>
-li ldiv(li n) {
+bool primetest(li p) {
 
-    if (n == 2 || n == 3) {
-        return n;
+    nfact = 0;
+    sz iprime = 0;
+    bool ret = false;
+    if (p == 2) {
+        ret = true;
+        factors[nfact++] = 2;
+    }
+    else if (p == 3) {
+        ret = true;
+        factors[nfact++] = 3;
+    }
+    else if (p > 1) {
+        for (iprime = 0; iprime < nprimes; iprime++) { // loop for small primes (<= sqrt(p))
+            sz prime = primes[iprime];
+            if (prime * prime > p) {
+                break;
+            }
+            if (p % prime == 0)
+            {
+                factors[nfact++] = prime;
+            }
+        }
+        if (nfact == 0) { // if no small primesa - this is a prime, add the number itself
+            ret = true;
+            factors[nfact++] = p;
+        }
+        else if (nfact == 1 && factors[nfact - 1] * factors[nfact - 1] != p) {
+            factors[nfact++] = p / factors[nfact - 1];
+        }
+    }
+
+    if (ret)
+    {
+        //outf << "P(" << ind << ")=" << p << " - prime; depth - " << iprime << endl;
     }
     else {
-        if (n % 2 == 0) {
-            return 2;
-        }
-        if (n % 3 == 0) {
-            return 3;
-        }
-
-        for (li i = 5; i * i <= n; i += 6)
-        {
-            if (n % i == 0) {
-                return i;
-            }
-            if (n % (i + 2) == 0) {
-                return i + 2;
-            }
-        }
+        //outf << "P(" << ind << ")=" << p << " - composite; depth - " << iprime << endl;
     }
 
-    return n;
+    return ret;
 }
 
-/// <summary>
-/// Returns a vector of prime factors of n without dubbing.
-/// </summary>
-/// <param name="n"></param>
-/// <returns></returns>
-vector<li> ldivv(li n) {
+li getn2(int a, int b, int c, li n1, li divisor) {
 
-    vector<li> ret;
-    if (n == 2 || n == 3) {
-        ret.push_back(n);
+    li ret = 0;
+    if (b == 0) {
+        ret = n1 > divisor ? n1 - divisor : divisor - n1;
     }
-    else if (n > 1) {
-        li m = n;
-        if (n % 2 == 0) {
-            ret.push_back(2);
-            while (m % 2 == 0)
-            {
-                m /= 2;
-            }
-        }
-        else if (n % 3 == 0) {
-            ret.push_back(3);
-            while (m % 3 == 0)
-            {
-                m /= 3;
-            }
-        }
-        for (li i = 5; i * i <= n; i += 6)
-        {
-            if (n % i == 0) {
-                ret.push_back(i);
-                while (m % i == 0)
-                {
-                    m /= i;
-                }
-            }
-            else if (n % (i + 2) == 0) {
-                ret.push_back(i + 2);
-                while (m % (i + 2) == 0)
-                {
-                    m /= i + 2;
-                }
-            }
-        }
-        if (m > 1)
-        {
-            ret.push_back(m);
-        }
+    else {
+
     }
     return ret;
 }
 
-li p(li a, li b, li c, li n) {
-    return a * n * n + b * n + c;
-}
-
-li sieve(li nmax) {
-
-    dv[0] = 1;
-
-    li imax = static_cast<li>(sqrt(nmax));
-    for (li i = 2; i <= imax; i++) {
-        if (dv[i] == i) {
-            li jst = i * i;
-            for (li j = jst; j <= nmax; j += i) {
-                dv[j] = i; // least divisor
-            }
-        }
-    }
-
-    li s = 0;
-    for (li i = 0; i <= nmax; i++) {
-        if (dv[i] == i) {
-            //cout << p(a, b, c, i) << endl;
-            s++;
-        }
-    }
-    return s;
-}
-
 /// <summary>
-/// Chain to cross out non-primes.
+/// Cross out each polynom term with the given step. 
+/// Divides each term by the given divisor until the remainer is zero.
 /// </summary>
-/// <param name="n">Starting index</param>
-/// <param name="k">Step</param>
-/// <param name="nmax">Maximal index</param>
-/// <param name="prime">A boolean array with prime/non-prime flags</param>
-void chain(li n, li k, li nmax, bool prime[]) {
-
-    //cout << "chain " << n << " : " << k << endl;
-
-    // the chain starts with (n+k) term
-    for (li i = n + k; i <= nmax; i += k) {
-        if (prime[i]) {
-            //  cross out i-th term
-            prime[i] = false;
+/// <param name="a"></param>
+/// <param name="b"></param>
+/// <param name="c"></param>
+/// <param name="n0"></param>
+/// <param name="nmax"></param>
+/// <param name="divisor"></param>
+void crossout(int a, int b, int c, li n0, li nmax, li divisor) {
+    for (li n = n0; n <= nmax; n += divisor) {
+        possibleprime[n] = false;
+        polynom[n] = polynom[n] == 0 ? (li(a) * n * n + li(b) * n + c) / divisor : polynom[n] / divisor;
+        while (polynom[n] % divisor == 0) {
+            polynom[n] /= divisor;
+            ndiv += 2;
         }
+        ndiv += 2;
     }
 }
 
-void prerun(li a, li b, li c, li nmax) {
+void mainloop(int a, int b, int c, li nmax, bool out) {
+    for (li n = 0; n <= nmax; n++) {
+        if (polynom[n] == 0) { // the term is not yet handled
+            polynom[n] = li(a) * n * n + li(b) * n + c;
+        }
+        if (polynom[n] == 1) { // completely handled
+            possibleprime[n] = false;
+        }
+        else if (polynom[n] > 1) { // incompletely handled
 
-    bool output = false;
-    vector<li> primes = makeprimeswithsieve(2 * nmax);
+            // start with the first term > 1
 
-    li npt = 0;
-    for (li iprime = primes.size() - 1; iprime >= primes.size() - 10000; iprime--) {
-        li prime = primes[iprime];
-        for (li n = 0; n <= nmax; n++) {
-            if (primeP[n]) {
-                if (pol[n] % prime == 0) {
-                    if (output) {
-                        cout << "n=" << n << " P(n)=" << pol[n] << " is divisible by " << prime << endl;
-                        cout << "mark all i starting with " << n + prime << " with step " << prime << " as non-primes" << endl;
-                    }
-                    li np = 0;
-                    for (li j = n + prime; j <= nmax; j += prime) {
-                        if (primeP[j]) {
-                            primeP[j] = false;
-                            np++;
-                        }
-                    }
-                    npt += np;
-                    if (output) {
-                        cout << "non-primes marked =       " << np << endl;
-                    }
-                    //
-                    li d2 = pol[n] / prime;
-                    if (d2 > 1 && d2 != prime) {
-                        if (output) {
-                            cout << "n=" << n << " P(n)=" << pol[n] << " is divisible by " << d2 << endl;
-                            cout << "mark all i starting with " << n + d2 << " with step " << d2 << " as non-primes" << endl;
-                        }
-                        np = 0;
-                        for (li j = n + d2; j <= nmax; j += d2) {
-                            if (primeP[j]) {
-                                primeP[j] = false;
-                                np++;
-                            }
-                        }
-                        npt += np;
-                        if (output) {
-                            cout << "non-primes marked =       " << np << endl;
-                        }
-                    }
-                    if (output) {
-                        cout << "----------" << endl;
-                    }
+            // start two cycles with crossing out
+            // one starts with n1, the second - with n2,
+            // where n1 and n2 - two base indexes for the divisor
+            li n1 = n;
+            crossout(a, b, c, n1 + polynom[n1], nmax, polynom[n1]);
+
+            // n2 > n1
+            li n2 = getn2(a, b, c, n, polynom[n]);
+            if (n2 <= nmax) {
+                if (polynom[n2] == 0) {
+                    polynom[n2] = li(a) * n2 * n2 + li(b) * n2 + c;
                 }
+                crossout(a, b, c, n2, nmax, polynom[n]);
             }
         }
     }
-    if (output) {
-        cout << "total non-primes marked = " << npt << endl;
-    }
-
-    //
-    li nprime = 0;
-    li nnprime = 0;
-    for (li n = 0; n <= nmax; n++) {
-        if (primeP[n]) {
-            nprime++;
-        }
-        else {
-            nnprime++;
-        }
-    }
-    cout << nprime << " potential primes" << endl;
-    cout << nnprime << " non-primes" << endl;
-    cout << nprime + nnprime << " total" << endl;
 }
 
-li solve3(li a, li b, li c, li nmax) {
-
-    li s = 0;
-    li icalc = 0;
-    li pmax = 0;
-    li ncalcmax = 0;
-    for (li n = 0; n <= nmax; n++) {
-        if (primeP[n]) {
-
-            li ldv = ldiv(pol[n]); // least divisor but 1
-
-            // count calculations
-            icalc++;
-            //cout << "Least divisor calculation for n = " << n << " Pn = " << pol[n] << " i = " << icalc << endl;
-
-            if (pol[n] > pmax) {
-                pmax = pol[n];
-                ncalcmax = n;
-            }
-
-            // 1 is not a prime
-            if (ldv == 1) {
-                primeP[n] = false;
-                continue;
-            }
-            else if (ldv < pol[n]) {
-                primeP[n] = false;
-            }
-            cout << "pmax  = " << pmax << " n = " << ncalcmax << " ldv = " << ldv << " icalc = " << icalc << endl;
-
-            // run a chain for crossing non-primes out
-            chain(n, ldv, nmax, primeP);
-        }
-        if (primeP[n]) {
-            s++;
-        }
-        //if (n % 10000 == 0) {
-        //    cout << n << endl;
-        //}
+void run(int a, int b, int c, int nmax, bool out)
+{
+    for (int i = 0; i <= nmax; i++) {
+        possibleprime[i] = true;
     }
-    cout << "icalc = " << icalc << endl;
-    return s;
+
+    mainloop(a, b, c, nmax, out);
 }
 
-li solve2(li a, li b, li c, li nmax) {
-
-    li s = 0;
-    li icalc = 0;
-    for (li n = 0; n <= nmax; n++) {
-        vector<li> dv = ldivv(pol[n]);
-        icalc++;
-        if (dv.empty()) {
-            primeP[n] = false;
-            continue;
-        }
-        //cout << "Least divisors calculation for n = " << n << " Pn = " << pol[n] << " i = " << icalc << endl;
-        for (li d : dv) {
-            cout << " --->" << n << " " << d << endl;
-            if (d < pol[n]) {
-                primeP[n] = false;
-            }
-            for (li j = n + d; j <= nmax; j += d) {
-                primeP[j] = false;
-            }
-        }
-        if (primeP[n]) {
-            s++;
-        }
-        if (n % 10000 == 0) {
-            cout << n << endl;
+li output(int nmax) {
+    li ret = 0;
+    int i = 0;
+    ofstream outf("Euler216.txt");
+    for (int n = 0; n < nmax; n++) {
+        if (possibleprime[n]) {
+            i++;
+            outf << i << " P(" << n << ") = " << polynom[n] << endl;
+            ret++;
         }
     }
-    cout << "icalc = " << icalc << endl;
-    return s;
-}
-
-li solve1(li a, li b, li c, li nmax) {
-    li scomp1 = 0;
-    li scomp2 = 0;
-    li sprime = 0;
-    for (li n = 0; n <= nmax; n++) {
-        bool maybeprime = true;
-        // Loop over primes <= sqrt(n)
-        li mmax = static_cast<li>(sqrt(n));
-        for (li m = 2; m <= mmax && (dv[m] == m); m++) {
-            li r = n % m;
-            li rem = pol[r];
-            if (rem % m == 0) {
-                // P is definitely not a prime
-                scomp1++;
-                //cout << n << " is compound " << scomp1 << " by " << m << endl;
-                maybeprime = false;
-                break;
-            }
-        }
-        if (maybeprime) {
-            if (isprime(pol[n])) {
-                sprime++;
-                //cout << n << " is prime " << sprime << endl;
-            }
-            else {
-                scomp2++;
-                //cout << n << " is secondary compound " << scomp2 << endl;
-            }
-        }
-    }
-    cout << "Compound 1 = " << scomp1 << " Compound 2 = " << scomp2 << " Prime = " << sprime << endl;
-    return sprime;
-}
-
-li solveBFDivisors(li a, li b, li c, li nmax) {
-
-    //ofstream outf("Euler216-divisorsbut3_11_17_19.txt");
-    li ldmax = 0;
-    li s = 0;
-    for (li n = 0; n <= nmax; n++) {
-        if (primeP[n]) {
-            li p = pol[n];
-            vector<li> ld = ldivv(p);
-            if (ld.size() == 0) {}
-            else if (ld[0] == p) {
-                //outf << "prime     " << n << " " << p << endl;
-                s++;
-            }
-            else {
-                //outf << "non-prime " << n << " " << p << " divisors:";
-                //for (li dv : ld) {
-                //    outf << " " << dv;
-                //}
-                //outf << endl;
-                if (ld[0] > ldmax)
-                    ldmax = ld[0];
-            }
-        }
-        if (n % 1000 == 0) {
-            cout << "n=" << n << " done" << endl;
-        }
-    }
-    //outf << "Maximal least divisor = " << ldmax << endl;
-    //outf.close();
-    return s;
-}
-
-li solveBF(li a, li b, li c, li nmax) {
-    auto start = std::chrono::high_resolution_clock::now();
-    cout << "BF solution started" << endl;
-    cout << "nmax = " << nmax << endl;
-    li nn = 0;
-    li np = 0;
-    for (li n = 0; n <= nmax; n++) {
-        nn++;
-        li p = pol[n];
-        if (isprime(p)) {
-            np++;
-        }
-        //if (n % 10000 == 0) {
-        //    cout << " solveBF: ---> " << n << " " << p << endl;
-        //}
-    }
-    auto stop = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
-    double t = duration.count() / 1E6;
-    cout << "BF done. " << endl;
-    cout << "n prime tests   = " << nprimetests << endl;
-    cout << "n divisions     = " << idivBF << endl;
-    cout << "primes found    = " << np << endl;
-    cout << "execution time  = " << t << " s" << endl;
-    cout << "execution time per division = " << t / np << " s" << endl;
-    cout << "--------------------" << endl;
-    return np;
-}
-
-void test(li nmax) {
-
-    li maybeprime = 0;
-    for (li n = 0; n <= nmax; n++) {
-        li p = pol[n];
-        if (ferma(p)) {
-            maybeprime++;
-        }
-    }
-    cout << maybeprime << endl;
+    outf.close();
+    return ret;
 }
 
 int main() {
@@ -456,62 +211,17 @@ int main() {
     int a = 2;
     int b = 0;
     int c = 1;
-    size_t n = 100000;
-    //vector<li> primes = makeprimeswithsieve(2 * n);
+    int nmax = 10000000;
+    bool out = false;
 
-    //auto start = std::chrono::high_resolution_clock::now();
+    auto start = std::chrono::high_resolution_clock::now();
+    run(a, b, c, nmax, out);
+    auto stop = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+    double t = duration.count() / 1E6;
 
-    //for (li i = 0; i <= n; i++) {
-    //    primeP[i] = true;
-    //    dv[i] = i;
-    //    pol[i] = p(a, b, c, i);
-    //}
-    //cout << "Data done for n = " << n << endl;
-    //cout << "--------------------" << endl;
-
-    //indextest(a, b, c, n);
-    //test(n);
-    //divisors(pol, n);
-
-    //auto stop = std::chrono::high_resolution_clock::now();
-    //auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
-    //double t = duration.count() / 1E6;
-    //cout << " time = " << t << " s" << endl;
-
-    //li res1 = sieve(n);
-    //cout << "Sieve done:         " << res1 << endl;
-    //auto stop = std::chrono::high_resolution_clock::now();
-    //auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
-    //double t = duration.count() / 1E6;
-    //cout << " time = " << t << " s" << endl;
-
-    //start = std::chrono::high_resolution_clock::now();
-    //prerun(a, b, c, n);
-    //cout << "Prerun done. " << endl;
-    //stop = std::chrono::high_resolution_clock::now();
-    //duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
-    //t = duration.count() / 1E6;
-    //cout << " time = " << t << " s" << endl;
-
-    //start = std::chrono::high_resolution_clock::now();
-    //li res1 = solveBFDivisors(a, b, c, n);
-    //cout << "solveBFDivisors done: " << res1 << endl;
-    //stop = std::chrono::high_resolution_clock::now();
-    //duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
-    //t = duration.count() / 1E6;
-    //cout << " time = " << t << " s" << endl;
-
-    //start = std::chrono::high_resolution_clock::now();
-    //li res = solve2(a, b, c, n);
-    //cout << "solve 2 done: " << res << endl;
-    //stop = std::chrono::high_resolution_clock::now();
-    //duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
-    //t = duration.count() / 1E6;
-    //cout << " time = " << t << " s" << endl;
-
-    //li resBF = solveBF(a, b, c, n);
-    //li res1 = run1(a, b, c, n, false);
-    li res2 = run2(a, b, c, n, false);
-
-    return 0;
+    cout << "Done for nmax   = " << nmax << endl;
+    cout << "Execution time  = " << t << " s" << endl;
+    cout << "Primes count    = " << output(nmax) << endl;
+    cout << "Divisions count = " << ndiv << endl;
 }
