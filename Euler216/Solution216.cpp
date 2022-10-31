@@ -88,22 +88,24 @@ bool primetest(li p) {
         factors[nfact++] = 3;
     }
     else if (p > 1) {
+        li ptmp = p;
         for (iprime = 0; iprime < nprimes; iprime++) { // loop for small primes (<= sqrt(p))
             sz prime = primes[iprime];
             if (prime * prime > p) {
                 break;
             }
-            if (p % prime == 0)
+            while (ptmp % prime == 0)
             {
+                ptmp /= prime;
                 factors[nfact++] = prime;
             }
         }
-        if (nfact == 0) { // if no small primesa - this is a prime, add the number itself
+        if (nfact == 0) { // if no small primes - this is a prime, add the number itself
             ret = true;
-            factors[nfact++] = p;
+            factors[nfact++] = ptmp;
         }
-        else if (nfact == 1 && factors[nfact - 1] * factors[nfact - 1] != p) {
-            factors[nfact++] = p / factors[nfact - 1];
+        else if (ptmp != 1) {
+            factors[nfact++] = ptmp;
         }
     }
 
@@ -152,18 +154,16 @@ void crossout(int a, int b, int c, li n0, li nmax, li divisor) {
     }
 }
 
-void mainloop(int a, int b, int c, li nmax, bool out) {
+void mainloopsimple(int a, int b, int c, li nmax, bool out) {
     for (li n = 0; n <= nmax; n++) {
         if (polynom[n] == 0) { // the term is not yet handled
             polynom[n] = li(a) * n * n + li(b) * n + c;
         }
-        if (polynom[n] == 1) { // completely handled
+        // start with the first term > 1
+        if (polynom[n] == 1) { // was equal to 1 OR completely reduced to 1
             possibleprime[n] = false;
         }
-        else if (polynom[n] > 1) { // incompletely handled
-
-            // start with the first term > 1
-
+        else if (polynom[n] > 1) { // not yet handled, let's do it
             // start two cycles with crossing out
             // one starts with n1, the second - with n2,
             // where n1 and n2 - two base indexes for the divisor
@@ -182,15 +182,6 @@ void mainloop(int a, int b, int c, li nmax, bool out) {
     }
 }
 
-void run(int a, int b, int c, int nmax, bool out)
-{
-    for (int i = 0; i <= nmax; i++) {
-        possibleprime[i] = true;
-    }
-
-    mainloop(a, b, c, nmax, out);
-}
-
 li output(int nmax) {
     li ret = 0;
     int i = 0;
@@ -206,16 +197,13 @@ li output(int nmax) {
     return ret;
 }
 
-int main() {
-
-    int a = 2;
-    int b = 0;
-    int c = 1;
-    int nmax = 10000000;
-    bool out = false;
-
+void runsimple(int a, int b, int c, int nmax, bool out)
+{
     auto start = std::chrono::high_resolution_clock::now();
-    run(a, b, c, nmax, out);
+    for (int i = 0; i <= nmax; i++) {
+        possibleprime[i] = true;
+    }
+    mainloopsimple(a, b, c, nmax, out);
     auto stop = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
     double t = duration.count() / 1E6;
@@ -224,4 +212,60 @@ int main() {
     cout << "Execution time  = " << t << " s" << endl;
     cout << "Primes count    = " << output(nmax) << endl;
     cout << "Divisions count = " << ndiv << endl;
+}
+
+void runBF(int a, int b, int c, int nmax, bool out) {
+    auto start = std::chrono::high_resolution_clock::now();
+    constructprimes(nmax);
+    ofstream outf;
+    if (out)
+        outf.open("Euler216-factorization.txt");
+    li s = 0;
+    for (int n = 0; n <= nmax; n++) {
+        li p = li(a) * n * n + li(b) * n + c;
+        if (p == 1) {
+            if (out) {
+                outf << "P(" << n << ") = " << p << endl;
+            }
+        }
+        else if (primetest(p)) {
+            s++;
+            if (out) {
+                outf << "P(" << n << ") = " << p << " - prime" << endl;
+            }
+        }
+        else {
+            if (out) {
+                outf << "P(" << n << ") = " << p << " = ";
+                for (int i = 0; i < nfact; i++) {
+                    outf << factors[i];
+                    if (i < nfact - 1) {
+                        outf << " * ";
+                    }
+                }
+                outf << endl;
+            }
+        }
+    }
+    if (out) {
+        outf << "Primes: " << s << endl;
+        outf.close();
+    }
+    auto stop = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+    double t = duration.count() / 1E6;
+    cout << "BF done for nmax  = " << nmax << endl;
+    cout << "Execution time    = " << t << " s" << endl;
+    cout << "Primes count      = " << s << endl;
+}
+
+int main() {
+
+    int a = 2;
+    int b = 27;
+    int c = 199721;
+    int nmax = 100;
+    bool out = true;
+
+    runBF(a, b, c, nmax, out);
 }
