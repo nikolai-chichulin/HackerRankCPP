@@ -12,7 +12,7 @@ typedef long long li;
 typedef size_t sz;
 
 // polynom
-const int lim = 20000000; // max possible number of the polynom terms
+const int lim = 60000000; // max possible number of the polynom terms
 li polynom[lim]; // polynom values p(n) = an^2 + bn + c
 bool possibleprime[lim]; // is term P(n) prime or not, n = [0; lim-1]
 
@@ -27,11 +27,30 @@ const sz limprimes = 2000000; // number of primes below 20 000 000
 sz primes[limprimes]; // primes
 sz nprimes = 0; // actual number of primes
 
-/// <summary>
-/// Construct primes up to nmax with Erato sieve.
-/// </summary>
-/// <param name="nmax"></param>
-/// <returns></returns>
+// Output to a file
+li output(int nmax) {
+    li ret = 0;
+    int i = 0;
+    ofstream outf("Euler216.txt");
+    for (int n = 0; n < nmax; n++) {
+        if (possibleprime[n]) {
+            i++;
+            outf << i << " P(" << n << ") = " << polynom[n] << endl;
+            ret++;
+        }
+    }
+    outf.close();
+    return ret;
+}
+
+// Constructs the polynom.
+void constructpolynom(int a, int b, int c, li nmax) {
+    for (int n = 0; n <= nmax; n++) {
+        polynom[n] = li(a) * n * n + li(b) * n + c;
+    }
+}
+
+// Constructs primes up to nmax with Erato sieve.
 void constructprimes(sz nmax) {
 
     // Basics
@@ -69,11 +88,7 @@ void constructprimes(sz nmax) {
     delete[] ispr;
 }
 
-/// <summary>
-/// Constructs prime factorizations of the given number.
-/// </summary>
-/// <param name="p">The number</param>
-/// <returns></returns>
+// Prime factorizations of the given number.
 bool primetest(li p) {
 
     nfact = 0;
@@ -120,6 +135,7 @@ bool primetest(li p) {
     return ret;
 }
 
+// Returns the second base index if any given the first one.
 li getn2(int a, int b, int c, li n1, li divisor) {
 
     li ret = 0;
@@ -132,16 +148,8 @@ li getn2(int a, int b, int c, li n1, li divisor) {
     return ret;
 }
 
-/// <summary>
-/// Cross out each polynom term with the given step. 
-/// Divides each term by the given divisor until the remainer is zero.
-/// </summary>
-/// <param name="a"></param>
-/// <param name="b"></param>
-/// <param name="c"></param>
-/// <param name="n0"></param>
-/// <param name="nmax"></param>
-/// <param name="divisor"></param>
+// Cross out each polynom term with the given step. 
+// Divides each term by the given divisor until the remainer is zero.
 void crossout(int a, int b, int c, li n0, li nmax, li divisor) {
     for (li n = n0; n <= nmax; n += divisor) {
         possibleprime[n] = false;
@@ -154,6 +162,34 @@ void crossout(int a, int b, int c, li n0, li nmax, li divisor) {
     }
 }
 
+// Cross out each polynom term with the given step. 
+// Divides each term by the given divisor only once.
+void crossoutsimple(int a, int b, int c, li n0, li nmax, li divisor) {
+    for (li n = n0; n <= nmax; n += divisor) {
+        possibleprime[n] = false;
+        polynom[n] /= divisor;
+        while (polynom[n] % divisor == 0) {
+            polynom[n] /= divisor;
+            ndiv += 2;
+        }
+        ndiv += 2;
+    }
+}
+
+// Simple variant for 2n^2 + 1
+void mainloopcomplicated(int a, int b, int c, li nmax, bool out) {
+
+    bool isprime0 = primetest(polynom[0]);
+    bool isprime1 = primetest(polynom[1]);
+
+    for (int ifact = 0; ifact < nfact; ifact++) {
+        if (ifact == 0 || (ifact > 0 && factors[ifact] > factors[ifact - 1])) {
+            crossoutsimple(a, b, c, 1, nmax, factors[ifact]);
+        }
+    }
+}
+
+// Simple variant for 2n^2 + 1
 void mainloopsimple(int a, int b, int c, li nmax, bool out) {
     for (li n = 0; n <= nmax; n++) {
         if (polynom[n] == 0) { // the term is not yet handled
@@ -182,47 +218,15 @@ void mainloopsimple(int a, int b, int c, li nmax, bool out) {
     }
 }
 
-li output(int nmax) {
-    li ret = 0;
-    int i = 0;
-    ofstream outf("Euler216.txt");
-    for (int n = 0; n < nmax; n++) {
-        if (possibleprime[n]) {
-            i++;
-            outf << i << " P(" << n << ") = " << polynom[n] << endl;
-            ret++;
-        }
-    }
-    outf.close();
-    return ret;
-}
-
-void runsimple(int a, int b, int c, int nmax, bool out)
-{
-    auto start = std::chrono::high_resolution_clock::now();
-    for (int i = 0; i <= nmax; i++) {
-        possibleprime[i] = true;
-    }
-    mainloopsimple(a, b, c, nmax, out);
-    auto stop = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
-    double t = duration.count() / 1E6;
-
-    cout << "Done for nmax   = " << nmax << endl;
-    cout << "Execution time  = " << t << " s" << endl;
-    cout << "Primes count    = " << output(nmax) << endl;
-    cout << "Divisions count = " << ndiv << endl;
-}
-
-void runBF(int a, int b, int c, int nmax, bool out) {
-    auto start = std::chrono::high_resolution_clock::now();
-    constructprimes(nmax);
+// Brute force variant for R&D
+void mainloopBF(int a, int b, int c, int nmax, bool out) {
     ofstream outf;
     if (out)
-        outf.open("Euler216-factorization.txt");
+        outf.open("Euler216-factorization-step2.txt");
     li s = 0;
     for (int n = 0; n <= nmax; n++) {
-        li p = li(a) * n * n + li(b) * n + c;
+        //polynom[n] = li(a) * n * n + li(b) * n + c;
+        li p = polynom[n];
         if (p == 1) {
             if (out) {
                 outf << "P(" << n << ") = " << p << endl;
@@ -251,21 +255,67 @@ void runBF(int a, int b, int c, int nmax, bool out) {
         outf << "Primes: " << s << endl;
         outf.close();
     }
+    cout << "BF done for nmax  = " << nmax << endl;
+    cout << "Primes count      = " << s << endl;
+}
+
+// More complicated variant for an^2 + bn + c
+void runcomplicated(int a, int b, int c, int nmax, bool out)
+{
+    auto start = std::chrono::high_resolution_clock::now();
+    constructprimes(nmax);
+    constructpolynom(a, b, c, nmax);
+    for (int i = 0; i <= nmax; i++) {
+        possibleprime[i] = true;
+    }
+    mainloopcomplicated(a, b, c, nmax, out);
+    mainloopBF(a, b, c, nmax, true);
     auto stop = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
     double t = duration.count() / 1E6;
-    cout << "BF done for nmax  = " << nmax << endl;
+
+    cout << "Done for nmax   = " << nmax << endl;
+    cout << "Primes count    = " << output(nmax) << endl;
+    cout << "Divisions count = " << ndiv << endl;
+    cout << "Execution time  = " << t << " s" << endl;
+}
+
+// Simple variant for 2n^2 + 1
+void runsimple(int a, int b, int c, int nmax, bool out)
+{
+    auto start = std::chrono::high_resolution_clock::now();
+    for (int i = 0; i <= nmax; i++) {
+        possibleprime[i] = true;
+    }
+    mainloopsimple(a, b, c, nmax, out);
+    auto stop = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+    double t = duration.count() / 1E6;
+
+    cout << "SV done for nmax = " << nmax << endl;
+    cout << "Primes count     = " << output(nmax) << endl;
+    cout << "Divisions count  = " << ndiv << endl;
+    cout << "Execution time   = " << t << " s" << endl;
+}
+
+// Brute force variant for R&D
+void runBF(int a, int b, int c, int nmax, bool out) {
+    auto start = std::chrono::high_resolution_clock::now();
+    constructprimes(nmax);
+    mainloopBF(a, b, c, nmax, out);
+    auto stop = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+    double t = duration.count() / 1E6;
     cout << "Execution time    = " << t << " s" << endl;
-    cout << "Primes count      = " << s << endl;
 }
 
 int main() {
 
     int a = 2;
-    int b = 27;
-    int c = 199721;
-    int nmax = 100;
-    bool out = true;
+    int b = 0;
+    int c = -1;
+    int nmax = 50000100;
+    bool out = false;
 
-    runBF(a, b, c, nmax, out);
+    runsimple(a, b, c, nmax, true);
 }
