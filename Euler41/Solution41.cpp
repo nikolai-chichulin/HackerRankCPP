@@ -100,7 +100,7 @@ int solve(int nmax) {
 }
 
 int main() {
-    int nmax = 10000;
+    int nmax = 100000000;
     int res = solve(nmax);
     cout << res << endl;
 }
