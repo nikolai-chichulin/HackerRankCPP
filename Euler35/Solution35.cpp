@@ -100,6 +100,7 @@ void test2() {
 
 li solve(int n) {
     li ret = 0;
+    li num = 0;
     for (int i = 2; i < n; i++) {
         if (isprime(i)) {
             bool iscircularprime = true;
@@ -112,6 +113,7 @@ li solve(int n) {
             }
             if (iscircularprime) {
                 ret += i;
+                num++;
             }
         }
     }
