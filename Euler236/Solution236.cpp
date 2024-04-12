@@ -36,6 +36,10 @@ struct Fraction
         return ret;
     }
 
+    bool operator==(const Fraction& other) {
+        return num == other.num && den == other.den;
+    }
+
     void reduce() {
         li gcd = Fraction::gcd(num, den);
         num /= gcd;
@@ -233,8 +237,10 @@ Fraction solve5(li a[], li b[]) {
     li sabd = a[0] * a[1] * a[2] * a[3] * a[4];
 
     for (li as1 = 1; as1 < a[0]; as1++) {
+        cout << "as1 = " << as1 << endl;
         li sabn1 = as1 * b[0] * a[1] * a[2] * a[3] * a[4];
         for (li as2 = 1; as2 < a[1]; as2++) {
+            cout << "as2 = " << as2 << endl;
             li sabn2 = a[0] * as2 * b[1] * a[2] * a[3] * a[4];
             for (li as3 = 1; as3 < a[2]; as3++) {
                 li sabn3 = a[0] * a[1] * as3 * b[2] * a[3] * a[4];
@@ -289,7 +295,7 @@ Fraction solve5(li a[], li b[]) {
 
                                 cout << " as: " << as1 << " " << as2 << " " << as3 << " " << as4 << " " << as5 << endl;
                                 cout << m2n << " / " << m2d << " = " << mf.numerator() << " / " << mf.denominator() << endl;
-                                return Fraction(mf.numeratorsqrt(), mf.denominatorsqrt());
+                                //return Fraction(mf.numeratorsqrt(), mf.denominatorsqrt());
                             }
                         }
                     }
@@ -361,6 +367,8 @@ void testGCD() {
     }
 }
 
+void selection();
+
 int main() {
 
     //testReduce();
@@ -379,19 +387,103 @@ int main() {
     //f.reduce();
     //bool squared = f.issquared();
 
-    li a[] = { 10,8,6 };
-    li b[] = { 2,9,9 };
+    //li a[] = { 10,8,6 };
+    //li b[] = { 2,9,9 };
+
+    //li a[] = { 30,19,2,17 };
+    //li b[] = { 29,18,17,26 };
 
     //li a[] = { 30,19,2,27,16 };
     //li b[] = { 29,18,17,26,5 };
 
+    //li a[] = { 164,41,82,180,123 };
+    //li b[] = { 20,59,118,118,177 };
+
+    li a[] = { 5248,1312,2624,5760,3936 };
+    li b[] = { 640,1888,3776,3776,5664 };
+
     auto start = std::chrono::high_resolution_clock::now();
-    Fraction res = solve3(a, b);
+    //Fraction res = solve5(a, b);
+    selection();
     auto stop = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
     double t = duration.count() / 1E6;
-    cout << res.numerator() << "/" << res.denominator() << endl;
+    //cout << res.numerator() << "/" << res.denominator() << endl;
     cout << " time = " << t << " s" << endl;
 
     return 0;
+}
+
+// reverse problem
+
+void selection() {
+
+    const int n = 5;
+    int a[] = { 5248,1312,2624,5760,3936 };
+    int b[] = { 640,1888,3776,3776,5664 };
+    Fraction m(1476, 1475);
+    int as[n] = {};
+    int bs[n] = {};
+    int atot = 0;
+    int btot = 0;
+    int astot = 0;
+    int bstot = 0;
+
+    // as and bs
+    for (int i = 0; i < n; i++) {
+        Fraction rate(a[i] * m.denominator(), b[i] * m.numerator());
+        rate.reduce();
+        as[i] = rate.numerator();
+        bs[i] = rate.denominator();
+        atot += a[i];
+        btot += b[i];
+        astot += as[i];
+        bstot += bs[i];
+    }
+
+    // expected ratio astotal / bstotal = m * atotal / btotal
+    Fraction ratio_exp(m.numerator() * atot, m.denominator() * btot);
+    ratio_exp.reduce();
+
+    // pick up coefficients
+    int num = 0;
+    for (int i0 = 1; i0 < 50; i0++) {
+        cout << "i0 = " << i0 << endl;
+        for (int i1 = 1; i1 < 50; i1++) {
+            //cout << " i1 = " << i1 << endl;
+            for (int i2 = 1; i2 < 50; i2++) {
+                for (int i3 = 1; i3 < 50; i3++) {
+                    for (int i4 = 1; i4 < 50; i4++) {
+                        astot = i0 * as[0] + i1 * as[1] + i2 * as[2] + i3 * as[3] + i4 * as[4];
+                        if (astot > atot) {
+                            continue;
+                        }
+                        bstot = i0 * bs[0] + i1 * bs[1] + i2 * bs[2] + i3 * bs[3] + i4 * bs[4];
+                        if (bstot > btot) {
+                            continue;
+                        }
+                        Fraction ratio = Fraction(astot, bstot);
+                        ratio.reduce();
+                        //cout << ratio.numerator() << "/" << ratio.denominator() << endl;
+                        if (ratio == ratio_exp) {
+                            num++;
+                            cout << "---------- num " << num << endl;
+                            cout << i0 << " " << i1 << " " << i2 << " " << i3 << " " << i4 << endl;
+                            cout << "as: " << i0 * as[0] << " " << i1 * as[1] << " " << i2 * as[2] << " " << i3 * as[3] << " " << i4 * as[4] << endl;
+                            cout << "bs: " << i0 * bs[0] << " " << i1 * bs[1] << " " << i2 * bs[2] << " " << i3 * bs[3] << " " << i4 * bs[4] << endl;
+                            cout << "astot = " << astot << " bstot = " << bstot << endl;
+                            cout << "reduced form: " << ratio.numerator() << "/" << ratio.denominator() << endl;
+                            // actual m
+                            Fraction aratetot(astot, atot);
+                            Fraction bratetot(bstot, btot);
+                            Fraction m_act(astot * btot, bstot * atot);
+                            m_act.reduce();
+                            cout << "m actual = " << m_act.numerator() << "/" << m_act.denominator() << endl;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 }
