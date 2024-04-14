@@ -2,12 +2,15 @@
 #include <cstdio>
 #include <vector>
 #include <iostream>
+#include <fstream>
 #include <algorithm>
 #include <chrono>
 
 using namespace std;
 
 typedef long long li;
+
+ofstream outf;
 
 struct Fraction
 {
@@ -367,9 +370,11 @@ void testGCD() {
     }
 }
 
-void selection();
+void selection(li a[], li b[]);
 
 int main() {
+
+    outf.open("output.dat");
 
     //testReduce();
     //testGCD();
@@ -404,86 +409,167 @@ int main() {
 
     auto start = std::chrono::high_resolution_clock::now();
     //Fraction res = solve5(a, b);
-    selection();
+    selection(a, b);
     auto stop = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
     double t = duration.count() / 1E6;
     //cout << res.numerator() << "/" << res.denominator() << endl;
-    cout << " time = " << t << " s" << endl;
+    std::cout << " time = " << t << " s" << endl;
 
+    outf.close();
     return 0;
 }
 
-// reverse problem
+// original PE 236 problem has been solved at April 14, 2024
+// maximal m = 123/59 = 2.08475
+// as = 413,1,1,30,10
+// bs = 105,3,3,41,30
+// astot = 455
+// bstot = 182
 
-void selection() {
+void selection(li a[], li b[]) {
 
     const int n = 5;
-    int a[] = { 5248,1312,2624,5760,3936 };
-    int b[] = { 640,1888,3776,3776,5664 };
-    Fraction m(1476, 1475);
-    int as[n] = {};
-    int bs[n] = {};
-    int atot = 0;
-    int btot = 0;
-    int astot = 0;
-    int bstot = 0;
+    li as[n] = {};
+    li bs[n] = {};
+    li atot = 0;
+    li btot = 0;
 
-    // as and bs
+    // sums
     for (int i = 0; i < n; i++) {
-        Fraction rate(a[i] * m.denominator(), b[i] * m.numerator());
-        rate.reduce();
-        as[i] = rate.numerator();
-        bs[i] = rate.denominator();
         atot += a[i];
         btot += b[i];
-        astot += as[i];
-        bstot += bs[i];
     }
 
-    // expected ratio astotal / bstotal = m * atotal / btotal
-    Fraction ratio_exp(m.numerator() * atot, m.denominator() * btot);
-    ratio_exp.reduce();
+    std::cout << "atot = " << atot << " btot = " << btot << endl;
 
-    // pick up coefficients
-    int num = 0;
-    for (int i0 = 1; i0 < 50; i0++) {
-        cout << "i0 = " << i0 << endl;
-        for (int i1 = 1; i1 < 50; i1++) {
-            //cout << " i1 = " << i1 << endl;
-            for (int i2 = 1; i2 < 50; i2++) {
-                for (int i3 = 1; i3 < 50; i3++) {
-                    for (int i4 = 1; i4 < 50; i4++) {
-                        astot = i0 * as[0] + i1 * as[1] + i2 * as[2] + i3 * as[3] + i4 * as[4];
-                        if (astot > atot) {
-                            continue;
+    // loop over the possible m for i = 0 as m = (bsi/bi) / (asi/ai) = (bsi*ai)  / (asi*bi)
+    li numcomb = 0;
+    li numcombtot = a[0] * b[0];
+    for (as[0] = 1062; as[0] <= a[0]; as[0]++) {
+        li bs_start = as[0] == 1062 ? 360 : b[0];
+        for (bs[0] = bs_start; bs[0] > 0; bs[0]--) {
+            numcomb++;
+            outf << "as[0] = " << as[0] << " bs[0] = " << bs[0] << " combination " << numcomb << " from " << numcombtot << endl;
+            // find m, it must be > 1
+            Fraction m(a[0] * bs[0], b[0] * as[0]);
+            if (m.numerator() <= m.denominator()) {
+                outf << "m = " << m.numerator() << " / " << m.denominator() << " <= 1, continue!" << endl;
+                continue;
+            }
+            double mdouble = double(m.numerator()) / double(m.denominator());
+            if (mdouble < 2.08475) {
+                continue;
+            }
+            m.reduce();
+            bool found = false;
+            // the expected value of the astot/bstot ratio: 
+            // since m = (astot/atot) / (bstot/btot) => astot/bstot = m*atot/btot
+            Fraction ratio_exp(m.numerator() * atot, m.denominator() * btot);
+            ratio_exp.reduce();
+            // find the base values of as and bs for i=1,2,3,4 as bsi = m_num*bi, asi = n_den*ai
+            for (int i = 1; i < n; i++) {
+                Fraction tmp(m.numerator() * b[i], m.denominator() * a[i]);
+                tmp.reduce();
+                as[i] = tmp.denominator();
+                bs[i] = tmp.numerator();
+            }
+            // pick up coefficients for i=1...4
+            li imax[n] = {};
+            for (int i = 1; i < n; i++) {
+                imax[i] = min(btot / bs[i], atot / as[i]);
+            }
+            int num = 0;
+            li astot0 = as[0];
+            li bstot0 = bs[0];
+            outf << "start i-looping: m = " << m.numerator() << " / " << m.denominator() << " = " << mdouble << endl;
+            for (int i1 = 1; i1 < imax[1]; i1++) {
+                //std::cout << " i1 = " << i1 << " from " << imax[1] << endl;
+                li astot1 = i1 * as[1];
+                if ((astot0 + astot1) > atot) {
+                    break;
+                }
+                li bstot1 = i1 * bs[1];
+                if ((bstot0 + bstot1) > btot) {
+                    break;
+                }
+                for (int i2 = 1; i2 < imax[2]; i2++) {
+                    //std::cout << " i2 = " << i2 << " from " << imax[2] << endl;
+                    li astot2 = i2 * as[2];
+                    if ((astot0 + astot1 + astot2) > atot) {
+                        break;
+                    }
+                    li bstot2 = i2 * bs[2];
+                    if ((bstot0 + bstot1 + bstot2) > btot) {
+                        break;
+                    }
+                    for (int i3 = 1; i3 < imax[3]; i3++) {
+                        li astot3 = i3 * as[3];
+                        if ((astot0 + astot1 + astot2 + astot3) > atot) {
+                            break;
                         }
-                        bstot = i0 * bs[0] + i1 * bs[1] + i2 * bs[2] + i3 * bs[3] + i4 * bs[4];
-                        if (bstot > btot) {
-                            continue;
+                        li bstot3 = i3 * bs[3];
+                        if ((bstot0 + bstot1 + bstot2 + bstot3) > btot) {
+                            break;
                         }
-                        Fraction ratio = Fraction(astot, bstot);
-                        ratio.reduce();
-                        //cout << ratio.numerator() << "/" << ratio.denominator() << endl;
-                        if (ratio == ratio_exp) {
-                            num++;
-                            cout << "---------- num " << num << endl;
-                            cout << i0 << " " << i1 << " " << i2 << " " << i3 << " " << i4 << endl;
-                            cout << "as: " << i0 * as[0] << " " << i1 * as[1] << " " << i2 * as[2] << " " << i3 * as[3] << " " << i4 * as[4] << endl;
-                            cout << "bs: " << i0 * bs[0] << " " << i1 * bs[1] << " " << i2 * bs[2] << " " << i3 * bs[3] << " " << i4 * bs[4] << endl;
-                            cout << "astot = " << astot << " bstot = " << bstot << endl;
-                            cout << "reduced form: " << ratio.numerator() << "/" << ratio.denominator() << endl;
-                            // actual m
-                            Fraction aratetot(astot, atot);
-                            Fraction bratetot(bstot, btot);
-                            Fraction m_act(astot * btot, bstot * atot);
-                            m_act.reduce();
-                            cout << "m actual = " << m_act.numerator() << "/" << m_act.denominator() << endl;
+                        for (int i4 = 1; i4 < imax[4]; i4++) {
+                            li astot4 = i4 * as[4];
+                            li astot = astot0 + astot1 + astot2 + astot3 + astot4;
+                            if (astot > atot) {
+                                break;
+                            }
+                            li bstot4 = i4 * bs[4];
+                            li bstot = bstot0 + bstot1 + bstot2 + bstot3 + bstot4;
+                            if (bstot > btot) {
+                                break;
+                            }
+                            if (bstot > astot) {
+                                break;
+                            }
+                            // compare with the expected value: m = (astot/atot) / (bstot/btot) => astot/bstot = m*atot/btot
+                            Fraction ratio = Fraction(astot, bstot);
+                            ratio.reduce();
+                            //cout << ratio.numerator() << "/" << ratio.denominator() << endl;
+                            if (ratio == ratio_exp) {
+                                num++;
+                                std::cout << "---------- num " << num << endl;
+                                std::cout << i1 << " " << i2 << " " << i3 << " " << i4 << endl;
+                                std::cout << "as: " << as[0] << " " << i1 * as[1] << " " << i2 * as[2] << " " << i3 * as[3] << " " << i4 * as[4] << endl;
+                                std::cout << "bs: " << bs[0] << " " << i1 * bs[1] << " " << i2 * bs[2] << " " << i3 * bs[3] << " " << i4 * bs[4] << endl;
+                                std::cout << "astot = " << astot << " bstot = " << bstot << endl;
+                                std::cout << "reduced form: " << ratio.numerator() << "/" << ratio.denominator() << endl;
+                                outf << "---------- found num " << num << endl;
+                                outf << "i1 = " << i1 << " i2 = " << i2 << " i3 = " << i3 << " i4 = " << i4 << endl;
+                                outf << "as: " << as[0] << " " << i1 * as[1] << " " << i2 * as[2] << " " << i3 * as[3] << " " << i4 * as[4] << endl;
+                                outf << "bs: " << bs[0] << " " << i1 * bs[1] << " " << i2 * bs[2] << " " << i3 * bs[3] << " " << i4 * bs[4] << endl;
+                                outf << "astot = " << astot << " bstot = " << bstot << endl;
+                                outf << "reduced form: " << ratio.numerator() << "/" << ratio.denominator() << endl;
+                                // actual m
+                                Fraction aratetot(astot, atot);
+                                Fraction bratetot(bstot, btot);
+                                Fraction m_act(astot * btot, bstot * atot);
+                                m_act.reduce();
+                                cout << "m actual = " << m_act.numerator() << "/" << m_act.denominator() << endl;
+                                outf << "m actual = " << m_act.numerator() << "/" << m_act.denominator() << endl;
+                                outf.flush();
+                                found = true;
+                            }
+                            if (found) {
+                                break;
+                            }
+                        }
+                        if (found) {
+                            break;
                         }
                     }
+                    if (found) {
+                        break;
+                    }
+                }
+                if (found) {
+                    break;
                 }
             }
         }
     }
-
 }
